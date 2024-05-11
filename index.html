@@ -10,19 +10,62 @@
       margin: 0px;
       height: 100%;
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     #map {
-      position: absolute;
-      width: 100%;
-      top: 0px;
-      bottom: 0;
+      width: 80%;
+      height: 80vh;
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
     }
   </style>
 </head>
 
 <body>
   <div id="map"></div>
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: blue;"></div>
+      Hospitals
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: green;"></div>
+      Pharmacies
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: red;"></div>
+      Civil Defense Centers
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: orange;"></div>
+      Police Stations
+    </div>
+  </div>
   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>
