@@ -29,22 +29,16 @@
     const mapOptions = {
       zoomSnap: 0.5,
       center: [31.9045, 35.2045],
-      zoom: 13,
+      zoom: 17.5,
     };
 
     const map = L.map("map", mapOptions);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 20
     }).addTo(map);
-
-    $.getJSON("RamallahZones.geojson", function(zones) {
-      L.geoJson(zones, {
-        onEachFeature: function(feature, layer) {
-          layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
-        }
-      }).addTo(map);
-    });
 
     $.getJSON("hospital.geojson", function(hospitals) {
       L.geoJson(hospitals, {
@@ -81,6 +75,14 @@
         }
       }).addTo(map);
     });
+    $.getJSON("RamallahZones.geojson", function(zones) {
+      L.geoJson(zones, {
+        onEachFeature: function(feature, layer) {
+          layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
+        }
+      }).addTo(map);
+    });
+    
   </script>
 </body>
 
