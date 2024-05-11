@@ -40,6 +40,11 @@
       maxZoom: 20
     }).addTo(map);
 
+    // Create a new pane for points
+    map.createPane('pointsPane');
+    map.getPane('pointsPane').style.zIndex = 650; // Set the zIndex above the base map layer
+
+    // For hospitals
     $.getJSON("hospital.geojson", function(hospitals) {
       L.geoJson(hospitals, {
         pointToLayer: function(feature, latlng) {
@@ -50,7 +55,7 @@
             color: "blue",
             weight: 1.0,
             opacity: 0.7,
-            zIndexOffset: 1000 // Ensure points are above base map layer
+            pane: 'pointsPane' // Assign the points to the new pane
           });
         },
         onEachFeature: function(feature, layer) {
@@ -59,6 +64,7 @@
       }).addTo(map);
     });
 
+    // For pharmacies
     $.getJSON("pharmacy.geojson", function(pharmacies) {
       L.geoJson(pharmacies, {
         pointToLayer: function(feature, latlng) {
@@ -69,7 +75,7 @@
             color: "green",
             weight: 1.0,
             opacity: 0.7,
-            zIndexOffset: 1000 // Ensure points are above base map layer
+            pane: 'pointsPane' // Assign the points to the new pane
           });
         },
         onEachFeature: function(feature, layer) {
@@ -78,8 +84,10 @@
       }).addTo(map);
     });
 
+    // Display RamallahZones.geojson below points
     $.getJSON("RamallahZones.geojson", function(zones) {
       L.geoJson(zones, {
+        pane: 'shadowPane', // Assign the zones to a pane below points
         onEachFeature: function(feature, layer) {
           layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
         }
