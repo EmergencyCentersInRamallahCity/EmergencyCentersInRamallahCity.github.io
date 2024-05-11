@@ -107,6 +107,25 @@
       }).addTo(map);
     });
 
+    // For Police.geojson
+    $.getJSON("Police.geojson", function(police) {
+      L.geoJson(police, {
+        pointToLayer: function(feature, latlng) {
+          return L.circleMarker(latlng, {
+            radius: 5,
+            fillColor: "orange",
+            fillOpacity: 1,
+            color: "orange",
+            weight: 1.0,
+            opacity: 0.7
+          });
+        },
+        onEachFeature: function(feature, layer) {
+          layer.bindPopup("Name: " + feature.properties.NAME_AR_1 + "<br> Phone Number: " + feature.properties.number_pho);
+        }
+      }).addTo(map);
+    });
+
   </script>
 </body>
 
