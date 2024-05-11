@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Mapping Emergency centers in Ramallah</title>
+  <title>Ramallah Libraries</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
   <style>
     body {
@@ -40,46 +40,55 @@
       maxZoom: 20
     }).addTo(map);
 
-    $.getJSON("police.geojson", function(policeData) {
-      L.geoJson(policeData, {
+    $.getJSON("hospital.geojson", function(hospitals) {
+      L.geoJson(hospitals, {
         style: function(feature) {
-          return { color: "#ff0000", weight: 2, fillOpacity: 0.3 };
+          return {
+            fillColor: "blue",
+            fillOpacity: 0.0,
+            color: "blue",
+            weight: 1.0,
+            opacity: 0.7
+          };
         },
         onEachFeature: function(feature, layer) {
-          layer.bindPopup("Police Station: " + feature.properties.name);
+          layer.bindPopup("Hospital Name: " + feature.properties.NAME_AR + "<br> Phone Number: " + feature.properties.Phone_Num + "<br> Sections: " + feature.properties.Sections);
         }
       }).addTo(map);
     });
 
-    $.getJSON("Hospital.geojson", function(hospitalData) {
-      L.geoJson(hospitalData, {
+    $.getJSON("RamallahZones.json", function(RZ) {
+      L.geoJson(RZ, {
         style: function(feature) {
-          return { color: "#fff0000", weight: 2, fillOpacity: 0.3 };
+          return {
+            fillColor: "yellow",
+            fillOpacity: 0.0,
+            color: "yellow",
+            weight: 1.0,
+            opacity: 0.7
+          };
         },
         onEachFeature: function(feature, layer) {
-          layer.bindPopup("Hospital: " + feature.properties.NAME_AR);
+          layer.on('click', function(e) {
+            alert("Zone: " + feature.properties.NAME_ENGLI + "\nMAIL_CODE: " + feature.properties.MAIL_CODE);
+          });
         }
       }).addTo(map);
     });
 
-    $.getJSON("RamallahZones.geojson", function(zonesData) {
-      L.geoJson(zonesData, {
+    $.getJSON("pharmacy.geojson", function(pharmacies) {
+      L.geoJson(pharmacies, {
         style: function(feature) {
-          return { color: "#0000ff", weight: 2, fillOpacity: 0.3 };
+          return {
+            fillColor: "green",
+            fillOpacity: 0.0,
+            color: "green",
+            weight: 1.0,
+            opacity: 0.7
+          };
         },
         onEachFeature: function(feature, layer) {
-          layer.bindPopup("Zone: " + feature.properties.NAME);
-        }
-      }).addTo(map);
-    });
-
-    $.getJSON("pharmacy_p.geojson", function(pharmacyData) {
-      L.geoJson(pharmacyData, {
-        style: function(feature) {
-          return { color: "#ffff00", weight: 2, fillOpacity: 0.3 };
-        },
-        onEachFeature: function(feature, layer) {
-          layer.bindPopup("Pharmacy: " + feature.properties.NAME_AR);
+          layer.bindPopup("Pharmacy Name: " + feature.properties.NAME_AR);
         }
       }).addTo(map);
     });
