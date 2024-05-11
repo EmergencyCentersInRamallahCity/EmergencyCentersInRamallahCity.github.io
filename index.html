@@ -83,15 +83,9 @@
       maxZoom: 20
     }).addTo(map);
 
-    // Display RamallahZones.geojson below points
-    $.getJSON("RamallahZones.geojson", function(zones) {
-      L.geoJson(zones, {
-        pane: 'shadowPane', // Assign the zones to a pane below points
-        onEachFeature: function(feature, layer) {
-          layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
-        }
-      }).addTo(map);
-    });
+    // Create a new pane for the points
+    map.createPane('pointsPane');
+    map.getPane('pointsPane').style.zIndex = 400;
 
     // For hospitals
     $.getJSON("hospital.geojson", function(hospitals) {
@@ -103,7 +97,8 @@
             fillOpacity: 1,
             color: "blue",
             weight: 1.0,
-            opacity: 0.7
+            opacity: 0.7,
+            pane: 'pointsPane' // Assign the points to the new pane
           });
         },
         onEachFeature: function(feature, layer) {
@@ -122,7 +117,8 @@
             fillOpacity: 1,
             color: "green",
             weight: 1.0,
-            opacity: 0.7
+            opacity: 0.7,
+            pane: 'pointsPane' // Assign the points to the new pane
           });
         },
         onEachFeature: function(feature, layer) {
@@ -141,7 +137,8 @@
             fillOpacity: 1,
             color: "red",
             weight: 1.0,
-            opacity: 0.7
+            opacity: 0.7,
+            pane: 'pointsPane' // Assign the points to the new pane
           });
         },
         onEachFeature: function(feature, layer) {
@@ -160,11 +157,22 @@
             fillOpacity: 1,
             color: "orange",
             weight: 1.0,
-            opacity: 0.7
+            opacity: 0.7,
+            pane: 'pointsPane' // Assign the points to the new pane
           });
         },
         onEachFeature: function(feature, layer) {
           layer.bindPopup("Name: " + feature.properties.NAME_AR_1 + "<br> Phone Number: " + feature.properties.number_pho);
+        }
+      }).addTo(map);
+    });
+
+    // Display RamallahZones.geojson below points
+    $.getJSON("RamallahZones.geojson", function(zones) {
+      L.geoJson(zones, {
+        pane: 'shadowPane', // Assign the zones to a pane below points
+        onEachFeature: function(feature, layer) {
+          layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
         }
       }).addTo(map);
     });
