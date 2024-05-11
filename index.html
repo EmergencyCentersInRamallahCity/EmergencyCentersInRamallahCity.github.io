@@ -40,9 +40,15 @@
       maxZoom: 20
     }).addTo(map);
 
-    // Create a new pane for points
-    map.createPane('pointsPane');
-    map.getPane('pointsPane').style.zIndex = 650; // Set the zIndex above the base map layer
+    // Display RamallahZones.geojson below points
+    $.getJSON("RamallahZones.geojson", function(zones) {
+      L.geoJson(zones, {
+        pane: 'shadowPane', // Assign the zones to a pane below points
+        onEachFeature: function(feature, layer) {
+          layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
+        }
+      }).addTo(map);
+    });
 
     // For hospitals
     $.getJSON("hospital.geojson", function(hospitals) {
@@ -54,8 +60,7 @@
             fillOpacity: 1,
             color: "blue",
             weight: 1.0,
-            opacity: 0.7,
-            pane: 'pointsPane' // Assign the points to the new pane
+            opacity: 0.7
           });
         },
         onEachFeature: function(feature, layer) {
@@ -74,8 +79,7 @@
             fillOpacity: 1,
             color: "green",
             weight: 1.0,
-            opacity: 0.7,
-            pane: 'pointsPane' // Assign the points to the new pane
+            opacity: 0.7
           });
         },
         onEachFeature: function(feature, layer) {
@@ -84,12 +88,21 @@
       }).addTo(map);
     });
 
-    // Display RamallahZones.geojson below points
-    $.getJSON("RamallahZones.geojson", function(zones) {
-      L.geoJson(zones, {
-        pane: 'shadowPane', // Assign the zones to a pane below points
+    // For civil.geojson
+    $.getJSON("civil.geojson", function(data) {
+      L.geoJson(data, {
+        pointToLayer: function(feature, latlng) {
+          return L.circleMarker(latlng, {
+            radius: 5,
+            fillColor: "red",
+            fillOpacity: 1,
+            color: "red",
+            weight: 1.0,
+            opacity: 0.7
+          });
+        },
         onEachFeature: function(feature, layer) {
-          layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
+          layer.bindPopup("Name: " + feature.properties.Name + "<br> Phone Number: " + feature.properties.number_pho);
         }
       }).addTo(map);
     });
