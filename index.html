@@ -100,8 +100,9 @@
     }).addTo(map);
 
     // Display RamallahZones.geojson below points
+    let zonesLayer;
     $.getJSON("RamallahZones.geojson", function(zones) {
-      L.geoJson(zones, {
+      zonesLayer = L.geoJson(zones, {
         onEachFeature: function(feature, layer) {
           layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
         }
