@@ -31,6 +31,18 @@
       z-index: 1000;
     }
 
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+    }
+
     .search-box {
       position: absolute;
       top: 20px;
@@ -63,6 +75,10 @@
       <div class="legend-color" style="background-color: orange;"></div>
       Police Stations
     </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: gray;"></div>
+      Ramallah Zones
+    </div>
   </div>
   <div id="search-box" class="search-box"></div>
   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
@@ -89,7 +105,8 @@
         onEachFeature: function(feature, layer) {
           layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
         }
-      }).addTo(map);
+      }).addTo(map).bringToBack();
+      $('#legend').append('<div class="legend-item"><div class="legend-color" style="background-color: gray;"></div>Ramallah Zones</div>');
     });
 
     // For hospitals
@@ -182,34 +199,6 @@
       }
     });
     searchControl.addTo(map);
-
-    // Legend
-    const legend = L.control({ position: "bottomright" });
-
-    legend.onAdd = function() {
-      const div = L.DomUtil.create("div", "legend");
-      div.innerHTML = `
-        <div class="legend-item">
-          <div class="legend-color" style="background-color: blue;"></div>
-          Hospitals
-        </div>
-        <div class="legend-item">
-          <div class="legend-color" style="background-color: green;"></div>
-          Pharmacies
-        </div>
-        <div class="legend-item">
-          <div class="legend-color" style="background-color: red;"></div>
-          Civil Defense Centers
-        </div>
-        <div class="legend-item">
-          <div class="legend-color" style="background-color: orange;"></div>
-          Police Stations
-        </div>
-      `;
-      return div;
-    };
-
-    legend.addTo(map);
 
   </script>
 </body>
