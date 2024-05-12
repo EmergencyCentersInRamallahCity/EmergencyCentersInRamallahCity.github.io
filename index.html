@@ -103,7 +103,7 @@
           });
         },
         onEachFeature: function(feature, layer) {
-          layer.bindPopup("Pharmacy Name: " + feature.properties.NAME_AR);
+          layer.bindPopup("Pharmacy Name: " + feature.properties.NAME_AR + "<br> Number: " + feature.properties.Number);
         }
       }).addTo(map).bringToFront();
     });
