@@ -15,8 +15,9 @@
     }
 
     #map {
-      width: 100vw;
-      height: 100vh;
+      width: 80%;
+      height: 80vh;
+      float: left;
     }
 
     .legend {
@@ -24,6 +25,9 @@
       padding: 10px;
       border-radius: 5px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      float: right;
+      margin-right: 20px;
+      margin-top: 20px;
     }
 
     .legend-item {
@@ -37,11 +41,41 @@
       height: 20px;
       margin-right: 5px;
     }
+
+    .search-box {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background-color: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 
 <body>
   <div id="map"></div>
+  <div id="legend" class="legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: blue;"></div>
+      Hospitals
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: green;"></div>
+      Pharmacies
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: red;"></div>
+      Civil Defense Centers
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: orange;"></div>
+      Police Stations
+    </div>
+  </div>
+  <div id="search-box" class="search-box"></div>
   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://unpkg.com/leaflet-control-search/dist/leaflet.control.search.min.js"></script>
@@ -149,13 +183,7 @@
       }).addTo(policeLayer).addTo(map).bringToFront();
     });
 
-    // Fit map to display all of Ramallah
-    map.fitBounds([
-      [31.8496, 35.1151], // Southwest coordinates
-      [31.9721, 35.2933] // Northeast coordinates
-    ]);
-
-    // Search Tool
+    // Search Control
     const searchControl = new L.Control.Search({
       layer: L.layerGroup([hospitalsLayer, pharmaciesLayer, civilLayer, policeLayer]),
       propertyName: 'NAME_AR',
@@ -164,12 +192,7 @@
         map.setView(latlng, 17); // set the zoom level to 17 when a location is found
       }
     });
-
-    searchControl.on('search:locationfound', function(e) {
-      e.layer.openPopup();
-    });
-
-    map.addControl(searchControl);
+    searchControl.addTo(map);
 
     // Legend
     const legend = L.control({ position: "bottomright" });
