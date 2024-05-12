@@ -12,40 +12,29 @@
       margin: 0px;
       height: 100%;
       width: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     #map {
-      width: 80%;
-      height: 80vh;
-      float: left;
+      flex: 1;
     }
 
     .legend {
+      position: absolute;
+      top: 20px;
+      right: 20px;
       background-color: white;
       padding: 10px;
       border-radius: 5px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      float: right;
-      margin-right: 20px;
-      margin-top: 20px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-    }
-
-    .legend-color {
-      width: 20px;
-      height: 20px;
-      margin-right: 5px;
+      z-index: 1000;
     }
 
     .search-box {
       position: absolute;
       top: 20px;
-      right: 20px;
+      left: 20px;
       z-index: 1000;
       background-color: white;
       padding: 10px;
