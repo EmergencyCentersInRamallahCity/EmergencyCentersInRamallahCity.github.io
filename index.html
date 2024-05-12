@@ -60,10 +60,6 @@
   <div id="map"></div>
   <div id="legend" class="legend">
     <div class="legend-item">
-      <div class="legend-color" style="background-color: gray;"></div>
-      Ramallah Zones
-    </div>
-    <div class="legend-item">
       <div class="legend-color" style="background-color: blue;"></div>
       Hospitals
     </div>
@@ -107,7 +103,6 @@
           layer.bindPopup("Zone Name: " + feature.properties.NAME + "<br> Mail Code: " + feature.properties.MAIL_CODE);
         }
       }).addTo(map).bringToBack();
-      $('#legend').append('<div class="legend-item"><div class="legend-color" style="background-color: gray;"></div>Ramallah Zones</div>');
     });
 
     // For hospitals
