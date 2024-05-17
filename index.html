@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <title>Mapping Emergency Centers in Ramallah</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-search/dist/leaflet.control.search.min.css" />
   <style>
-    body, html {
+    body,
+    html {
       margin: 0px;
       height: 100%;
       width: 100%;
       display: flex;
       flex-direction: column;
     }
+
     #map {
       flex: 1;
     }
+
     .legend {
       position: absolute;
       top: 20px;
@@ -26,16 +30,19 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       z-index: 1000;
     }
+
     .legend-item {
       display: flex;
       align-items: center;
       margin-bottom: 5px;
     }
+
     .legend-color {
       width: 20px;
       height: 20px;
       margin-right: 5px;
     }
+
     .search-box {
       position: absolute;
       top: 20px;
@@ -48,6 +55,7 @@
     }
   </style>
 </head>
+
 <body>
   <div id="map"></div>
   <div id="legend" class="legend">
@@ -152,12 +160,12 @@
           });
         },
         onEachFeature: function(feature, layer) {
-          layer.bindPopup("Name: " + feature.properties.Name + "<br> Phone Number: " + feature.properties.number_pho + "<br><img src='https://www.google.com/maps/uv?pb=!1s0x1502d5df5179053f%3A0xed3864f714367d95!3m1!7e115!4zL21hcHMvcGxhY2UvJUQ5JTg1JUQ4JUFGJUQ5JThBJUQ4JUIxJUQ5JThBJUQ4JUE5KyVEOCVBNyVEOSU4NCVEOCVBRiVEOSU4MSVEOCVBNyVEOCVCOSslRDglQTclRDklODQlRDklODUlRDglQUYlRDklODYlRDklOEErLSslRDklODUlRDglQUQlRDglQTclRDklODElRDglQjglRDglQTkrJUQ4JUIxJUQ4JUE3JUQ5JTg1KyVEOCVBNyVEOSU4NCVEOSU4NCVEOSU4NyslRDklODglRDglQTclRDklODQlRDglQTglRDklOEElRDglQjElRDglQTklRTIlODAlQUQvQDMxLjg5MzMwOTgsMzUuMTg3NjU0MSwzYSw3NXksNTAuM2gsOTB0L2RhdGE9ITNtNCExZTEhM20yITFzRDUwMzBLWDFxZ3hneWU3UDF1WGFUUSEyZTAhNG0yITNtMSExczB4MTUwMmQ1ZGY1MTc5MDUzZjoweGVkMzg2NGY3MTQzNjdkOTU_c2E9WCZ2ZWQ9MmFoVUtFd2lNby1uY3pwV0dBeFhpU3ZFREhYYWhDNWdRcHg5NkJBaFpFQUE!5z2YXYr9mK2LHZitipINin2YTYr9mB2KfYuSDYp9mE2YXYr9mG2YogLSDZhdit2KfZgdi42Kkg2LHYp9mFINin2YTZhNmHINmI2KfZhNio2YrYsdipIC0gR29vZ2xlIFNlYXJjaA!15sCgIgAQ&imagekey=!1e2!2sD5030KX1qgxgye7P1uXaTQ&hl=en&ved=1t%3A206134&ictx=111#' width='200px' /><br><a href='https://www.google.com/maps/search/%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9+%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9+%D9%84%D9%84%D8%AF%D9%81%D8%A7%D8%B9+%D8%A7%D9%84%D9%85%D8%AF%D9%86%D9%8A/@31.8933098,35.1876541,13z/data=!3m4!1e1!3m2!1sD5030KX1qgxgye7P1uXaTQ!2e0?hl=en' target='_blank'>View on Google Maps</a>");
+          layer.bindPopup("Name: " + feature.properties.Name + "<br> Phone Number: " + feature.properties.number_pho + "<br><a href='https://www.google.com/maps/search/%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9+%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9+%D9%84%D8%AF%D9%81%D8%A7%D8%B9+%D8%A7%D9%84%D9%85%D8%AF%D9%86%D9%8A%E2%80%AD/@31.8912864,35.1572997,13z?entry=ttu' target='_blank'>الموقع على خرائط جوجل</a>");
         }
       }).addTo(civilDefenseLayer).addTo(map).bringToFront();
     });
 
-    // For police stations
+    // For Police.geojson
     const policeLayer = L.layerGroup();
     $.getJSON("Police.geojson", function(police) {
       L.geoJson(police, {
@@ -177,20 +185,18 @@
       }).addTo(policeLayer).addTo(map).bringToFront();
     });
 
-    // Add search control
+    // Search Control
     const searchControl = new L.Control.Search({
       layer: L.layerGroup([hospitalsLayer, pharmaciesLayer, civilDefenseLayer, policeLayer]),
-      propertyName: "NAME_AR",
-      initial: false,
-      zoom: 15,
-      marker: false
+      propertyName: 'NAME_AR',
+      marker: false,
+      moveToLocation: function(latlng, title, map) {
+        map.setView(latlng, 17); // set the zoom level to 17 when a location is found
+      }
     });
+    searchControl.addTo(map);
 
-    searchControl.on('search:locationfound', function(e) {
-      e.layer.openPopup();
-    });
-
-    map.addControl(searchControl);
   </script>
 </body>
+
 </html>
