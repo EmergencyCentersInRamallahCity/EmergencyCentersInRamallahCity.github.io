@@ -83,8 +83,8 @@
   <script>
     const mapOptions = {
       zoomSnap: 0.5,
-      center: [31.9157301, 35.1798533],
-      zoom: 13,
+      center: [31.9045, 35.2045],
+      zoom: 17.5,
       maxZoom: 20
     };
 
@@ -145,10 +145,10 @@
       }).addTo(pharmaciesLayer).addTo(map).bringToFront();
     });
 
-    // For ciivilld.geojson
-    const civilDefenseLayer = L.layerGroup();
-    $.getJSON("ciivilld.geojson", function(civilDefense) {
-      L.geoJson(civilDefense, {
+    // For civil.geojson
+    const civilLayer = L.layerGroup();
+    $.getJSON("civil.geojson", function(data) {
+      L.geoJson(data, {
         pointToLayer: function(feature, latlng) {
           return L.circleMarker(latlng, {
             radius: 5,
@@ -160,9 +160,9 @@
           });
         },
         onEachFeature: function(feature, layer) {
-          layer.bindPopup("Name: " + feature.properties.Name + "<br> Phone Number: " + feature.properties.number_pho);
+          layer.bindPopup("Name: " + feature.properties.Name + "<br> Phone Number: " + feature.properties.number_pho + "<br> Location: " + feature.properties.location);
         }
-      }).addTo(civilDefenseLayer).addTo(map).bringToFront();
+      }).addTo(civilLayer).addTo(map).bringToFront();
     });
 
     // For Police.geojson
@@ -187,7 +187,7 @@
 
     // Search Control
     const searchControl = new L.Control.Search({
-      layer: L.layerGroup([hospitalsLayer, pharmaciesLayer, civilDefenseLayer, policeLayer]),
+      layer: L.layerGroup([hospitalsLayer, pharmaciesLayer, civilLayer, policeLayer]),
       propertyName: 'NAME_AR',
       marker: false,
       moveToLocation: function(latlng, title, map) {
