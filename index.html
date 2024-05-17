@@ -145,10 +145,10 @@
       }).addTo(pharmaciesLayer).addTo(map).bringToFront();
     });
 
-    // For civil.geojson
-    const civilLayer = L.layerGroup();
-    $.getJSON("civil.geojson", function(data) {
-      L.geoJson(data, {
+    // For ciivilld.geojson
+    const civilDefenseLayer = L.layerGroup();
+    $.getJSON("ciivilld.geojson", function(civilDefense) {
+      L.geoJson(civilDefense, {
         pointToLayer: function(feature, latlng) {
           return L.circleMarker(latlng, {
             radius: 5,
@@ -162,7 +162,7 @@
         onEachFeature: function(feature, layer) {
           layer.bindPopup("Name: " + feature.properties.Name + "<br> Phone Number: " + feature.properties.number_pho);
         }
-      }).addTo(civilLayer).addTo(map).bringToFront();
+      }).addTo(civilDefenseLayer).addTo(map).bringToFront();
     });
 
     // For Police.geojson
@@ -187,7 +187,7 @@
 
     // Search Control
     const searchControl = new L.Control.Search({
-      layer: L.layerGroup([hospitalsLayer, pharmaciesLayer, civilLayer, policeLayer]),
+      layer: L.layerGroup([hospitalsLayer, pharmaciesLayer, civilDefenseLayer, policeLayer]),
       propertyName: 'NAME_AR',
       marker: false,
       moveToLocation: function(latlng, title, map) {
