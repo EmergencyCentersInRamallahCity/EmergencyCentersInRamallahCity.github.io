@@ -125,78 +125,19 @@
       }).addTo(hospitalsLayer).addTo(map).bringToFront();
     });
 
-    // For pharmacies
-    const pharmaciesLayer = L.layerGroup();
-    $.getJSON("pharmacy.geojson", function(pharmacies) {
-      L.geoJson(pharmacies, {
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: "green",
-            fillOpacity: 1,
-            color: "green",
-            weight: 1.0,
-            opacity: 0.7
-          });
-        },
-        onEachFeature: function(feature, layer) {
-          layer.bindPopup("Pharmacy Name: " + feature.properties.NAME_AR + "<br> Number: " + feature.properties.Number);
-        }
-      }).addTo(pharmaciesLayer).addTo(map).bringToFront();
-    });
-
-    // For ciivilld.geojson
-    const civilDefenseLayer = L.layerGroup();
-    $.getJSON("ciivilld.geojson", function(civilDefense) {
-      L.geoJson(civilDefense, {
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: "red",
-            fillOpacity: 1,
-            color: "red",
-            weight: 1.0,
-            opacity: 0.7
-          });
-        },
-        onEachFeature: function(feature, layer) {
-          layer.bindPopup("Name: " + feature.properties.Name + "<br> Phone Number: " + feature.properties.number_pho + "<br><a href='https://www.google.com/maps/search/%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9+%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9+%D9%84%D8%AF%D9%81%D8%A7%D8%B9+%D8%A7%D9%84%D9%85%D8%AF%D9%86%D9%8A%E2%80%AD/@31.8912864,35.1572997,13z?entry=ttu' target='_blank'>الموقع على خرائط جوجل</a>");
-        }
-      }).addTo(civilDefenseLayer).addTo(map).bringToFront();
-    });
-
-    // For Police.geojson
-    const policeLayer = L.layerGroup();
-    $.getJSON("Police.geojson", function(police) {
-      L.geoJson(police, {
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: "orange",
-            fillOpacity: 1,
-            color: "orange",
-            weight: 1.0,
-            opacity: 0.7
-          });
-        },
-        onEachFeature: function(feature, layer) {
-          layer.bindPopup("Name: " + feature.properties.NAME_AR_1 + "<br> Phone Number: " + feature.properties.number_pho);
-        }
-      }).addTo(policeLayer).addTo(map).bringToFront();
-    });
-
-    // Search Control
-    const searchControl = new L.Control.Search({
-      layer: L.layerGroup([hospitalsLayer, pharmaciesLayer, civilDefenseLayer, policeLayer]),
+    // Search Control for Hospitals
+    const hospitalSearchControl = new L.Control.Search({
+      layer: hospitalsLayer,
       propertyName: 'NAME_AR',
       marker: false,
       moveToLocation: function(latlng, title, map) {
         map.setView(latlng, 17); // set the zoom level to 17 when a location is found
       }
     });
-    searchControl.addTo(map);
+    hospitalSearchControl.addTo(map);
 
   </script>
 </body>
 
 </html>
+
