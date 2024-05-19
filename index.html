@@ -45,11 +45,11 @@
 
     .search-box {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
+      top: 20px;
+      left: 20px;
       z-index: 1000;
       background-color: white;
-      padding: 50px;
+      padding: 10px;
       border-radius: 5px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
@@ -185,22 +185,16 @@
       }).addTo(policeLayer).addTo(map).bringToFront();
     });
 
+    // Search Control
+    const searchControl = new L.Control.Search({
+      layer: L.layerGroup([hospitalsLayer, pharmaciesLayer, civilDefenseLayer, policeLayer]),
+      propertyName: 'NAME_AR',
+      marker: false,
+      moveToLocation: function(latlng, title, map) {
+        map.setView(latlng, 17); // set the zoom level to 17 when a location is found
+      }
+    });
     searchControl.addTo(map);
-    // Add the geocoder control to the map
-    const geocoder = L.Control.geocoder({
-      defaultMarkGeocode: false
-    })
-      .on('markgeocode', function (e) {
-        const bbox = e.geocode.bbox;
-        const poly = L.polygon([
-          bbox.getSouthEast(),
-          bbox.getNorthEast(),
-          bbox.getNorthWest(),
-          bbox.getSouthWest()
-        ]).addTo(map);
-        map.fitBounds(poly.getBounds());
-      })
-      .addTo(map);
 
   </script>
 </body>
