@@ -185,15 +185,6 @@
       }).addTo(policeLayer).addTo(map).bringToFront();
     });
 
-    // Search Control
-    const searchControl = new L.Control.Search({
-      layer: L.layerGroup([hospitalsLayer, pharmaciesLayer, civilDefenseLayer, policeLayer]),
-      propertyName: 'NAME_AR',
-      marker: false,
-      moveToLocation: function(latlng, title, map) {
-        map.setView(latlng, 17); // set the zoom level to 17 when a location is found
-      }
-    });
     searchControl.addTo(map);
     // Add the geocoder control to the map
     const geocoder = L.Control.geocoder({
