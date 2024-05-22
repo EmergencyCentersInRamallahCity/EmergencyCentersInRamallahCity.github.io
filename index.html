@@ -66,11 +66,13 @@
         function addToSearchData(layer, propertyName) {
             layer.eachLayer(function (l) {
                 if (l.feature && l.feature.properties[propertyName]) {
+                    var bounds = l.getBounds();
+                    var center = bounds.getCenter();
                     dataForSearch.push({
-                        loc: l.getLatLng(),
+                        loc: center,
                         title: l.feature.properties[propertyName]
                     });
-                    console.log('Added to search data:', l.feature.properties[propertyName], l.getLatLng());
+                    console.log('Added to search data:', l.feature.properties[propertyName], center);
                 }
             });
         }
@@ -103,7 +105,9 @@
                 layer.openPopup();
         }).on('search:collapsed', function(e) {
             allLayers.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
-                allLayers.resetStyle(layer);
+                if (layer.resetStyle) {
+                    layer.resetStyle();
+                }
             });
         });
 
