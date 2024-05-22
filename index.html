@@ -54,41 +54,56 @@
         pharmacyLayer.addTo(map);
         zonesLayer.addTo(map);
 
-        // دالة لإنشاء أداة البحث للطبقة
-        function createSearchControl(layer, propertyName) {
-            var searchControl = new L.Control.Search({
-                layer: layer,
-                propertyName: propertyName,
-                marker: false,
-                moveToLocation: function (latlng, title, map) {
-                    map.setView(latlng, 15); // تكبير الخريطة عند العثور على نتيجة
+        // إنشاء مجموعة تحتوي على جميع الطبقات
+        var allLayers = L.layerGroup([policeLayer, civilLayer, hospitalLayer, pharmacyLayer, zonesLayer]);
+
+        // إنشاء بيانات البحث الموحدة
+        var dataForSearch = [];
+        
+        function addToSearchData(layer, propertyName) {
+            layer.eachLayer(function (layer) {
+                if (layer.feature && layer.feature.properties[propertyName]) {
+                    dataForSearch.push({
+                        loc: layer.getLatLng(),
+                        title: layer.feature.properties[propertyName]
+                    });
                 }
             });
-
-            searchControl.on('search:locationfound', function(e) {
-                e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
-                if (e.layer._popup)
-                    e.layer.openPopup();
-            }).on('search:collapsed', function(e) {
-                layer.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
-                    layer.resetStyle(layer);
-                });
-            });
-
-            return searchControl;
         }
 
-        // إضافة أدوات البحث للطبقات المختلفة
-        var hospitalSearch = createSearchControl(hospitalLayer, 'NAME_AR');
-        var pharmacySearch = createSearchControl(pharmacyLayer, 'NAME_AR');
-        var policeSearch = createSearchControl(policeLayer, 'NAME_AR_1');
-        var civilSearch = createSearchControl(civilLayer, 'Name');
+        addToSearchData(policeLayer, 'NAME_AR_1');
+        addToSearchData(civilLayer, 'Name');
+        addToSearchData(hospitalLayer, 'NAME_AR');
+        addToSearchData(pharmacyLayer, 'NAME_AR');
+        
+        // إعداد أداة البحث
+        var searchControl = new L.Control.Search({
+            layer: allLayers,
+            sourceData: function(text, callback) {
+                var results = dataForSearch.filter(function(item) {
+                    return item.title.toLowerCase().includes(text.toLowerCase());
+                });
+                callback(results);
+            },
+            textPlaceholder: 'Search...',
+            marker: false,
+            moveToLocation: function(latlng, title, map) {
+                map.setView(latlng, 15); // تكبير الخريطة عند العثور على نتيجة
+            }
+        });
 
-        // إضافة أدوات البحث إلى الخريطة
-        map.addControl(hospitalSearch);
-        map.addControl(pharmacySearch);
-        map.addControl(policeSearch);
-        map.addControl(civilSearch);
+        searchControl.on('search:locationfound', function(e) {
+            var layer = e.layer;
+            layer.setStyle({fillColor: '#3f0', color: '#0f0'});
+            if (layer._popup)
+                layer.openPopup();
+        }).on('search:collapsed', function(e) {
+            allLayers.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
+                allLayers.resetStyle(layer);
+            });
+        });
+
+        map.addControl(searchControl); // إضافة أداة البحث إلى الخريطة
     </script>
 </body>
 </html>
