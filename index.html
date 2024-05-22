@@ -5,7 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css" />
     <style>
         #map { height: 600px; }
     </style>
@@ -13,7 +12,6 @@
 <body>
     <div id="map"></div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
     <script>
         var map = L.map('map').setView([31.92, 35.20], 13);
 
@@ -21,73 +19,51 @@
             maxZoom: 19
         }).addTo(map);
 
-        var emergencyCenters = L.geoJSON(null, {
+        var policeData = {/* محتوى ملف Police.geojson */};
+        var ramallahZonesData = {/* محتوى ملف RamallahZones.geojson */};
+        var civilData = {/* محتوى ملف ciivilld.geojson */};
+        var hospitalData = {/* محتوى ملف hospital.geojson */};
+        var pharmacyData = {/* محتوى ملف pharmacy.geojson */};
+
+        var policeLayer = L.geoJSON(policeData, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.NAME_AR_1) {
+                    layer.bindPopup(feature.properties.NAME_AR_1);
+                }
+            }
+        }).addTo(map);
+
+        var ramallahZonesLayer = L.geoJSON(ramallahZonesData, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.NAME) {
+                    layer.bindPopup(feature.properties.NAME);
+                }
+            }
+        }).addTo(map);
+
+        var civilLayer = L.geoJSON(civilData, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.Name) {
+                    layer.bindPopup(feature.properties.Name);
+                }
+            }
+        }).addTo(map);
+
+        var hospitalLayer = L.geoJSON(hospitalData, {
             onEachFeature: function (feature, layer) {
                 if (feature.properties && feature.properties.NAME_AR) {
                     layer.bindPopup(feature.properties.NAME_AR);
                 }
             }
-        });
+        }).addTo(map);
 
-        fetch('https://raw.githubusercontent.com/basmaqasem1531/basmaqasem1531.github.io/main/emergency_centers.geojson')
-            .then(response => response.json())
-            .then(data => {
-                emergencyCenters.addData(data);
-                emergencyCenters.addTo(map);
-                addToSearchData(emergencyCenters, 'NAME_AR');
-            })
-            .catch(error => console.error('Error loading GeoJSON:', error));
-
-        var dataForSearch = [];
-
-        function addToSearchData(layer, propertyName) {
-            layer.eachLayer(function (l) {
-                if (l.feature && l.feature.properties[propertyName]) {
-                    var bounds = l.getBounds();
-                    var center = bounds.getCenter();
-                    dataForSearch.push({
-                        loc: center,
-                        title: l.feature.properties[propertyName]
-                    });
-                    console.log('Added to search data:', l.feature.properties[propertyName], center);
+        var pharmacyLayer = L.geoJSON(pharmacyData, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.NAME_AR) {
+                    layer.bindPopup(feature.properties.NAME_AR);
                 }
-            });
-        }
-
-        var searchControl = new L.Control.Search({
-            layer: emergencyCenters,
-            sourceData: function(text, callback) {
-                var results = {};
-                dataForSearch.forEach(function(item) {
-                    if (item.title.toLowerCase().includes(text.toLowerCase())) {
-                        results[item.title] = item.loc;
-                    }
-                });
-                console.log('Search results for "' + text + '":', results);
-                callback(results);
-            },
-            textPlaceholder: 'Search...',
-            marker: false,
-            moveToLocation: function(latlng, title, map) {
-                var zoom = 15;
-                map.setView(latlng, zoom);
             }
-        });
-
-        searchControl.on('search:locationfound', function(e) {
-            var layer = e.layer;
-            layer.setStyle({fillColor: '#3f0', color: '#0f0'});
-            if (layer._popup)
-                layer.openPopup();
-        }).on('search:collapsed', function(e) {
-            emergencyCenters.eachLayer(function(layer) {
-                if (layer.resetStyle) {
-                    layer.resetStyle();
-                }
-            });
-        });
-
-        map.addControl(searchControl);
+        }).addTo(map);
     </script>
 </body>
 </html>
