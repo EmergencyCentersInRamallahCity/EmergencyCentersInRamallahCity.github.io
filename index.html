@@ -106,144 +106,73 @@
     });
 
     // For hospitals
-    const hospitalsLayer = L.layerGroup();
-    $.getJSON("hospital.geojson", function(hospitals) {
-      L.geoJson(hospitals, {
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: "blue",
-            fillOpacity: 1,
-            color: "blue",
-            weight: 1.0,
-            opacity: 0.7
-          });
-        },
-        onEachFeature: function(feature, layer) {
-          layer.bindPopup("Hospital Name: " + feature.properties.NAME_AR + "<br> Phone Number: " + feature.properties.Phone_Num + "<br> Sections: " + feature.properties.Sections);
-        }
-      }).addTo(hospitalsLayer).addTo(map).bringToFront();
-    });
+    const hospitalsLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', {color: 'blue'});
+    hospitalsLayer.addTo(map);
 
     // For pharmacies
-    const pharmaciesLayer = L.layerGroup();
-    $.getJSON("pharmacy.geojson", function(pharmacies) {
-      L.geoJson(pharmacies, {
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: "green",
-            fillOpacity: 1,
-            color: "green",
-            weight: 1.0,
-            opacity: 0.7
-          });
-        },
-        onEachFeature: function(feature, layer) {
-          layer.bindPopup("Pharmacy Name: " + feature.properties.NAME_AR + "<br> Number: " + feature.properties.Number);
-        }
-      }).addTo(pharmaciesLayer).addTo(map).bringToFront();
-    });
+    const pharmaciesLayer = createGeoJsonLayer('pharmacy.geojson', 'NAME_AR', {color: 'green'});
+    pharmaciesLayer.addTo(map);
 
     // For ciivilld.geojson
-    const civilDefenseLayer = L.layerGroup();
-    $.getJSON("ciivilld.geojson", function(civilDefense) {
-      L.geoJson(civilDefense, {
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: "red",
-            fillOpacity: 1,
-            color: "red",
-            weight: 1.0,
-            opacity: 0.7
-          });
-        },
-        onEachFeature: function(feature, layer) {
-          layer.bindPopup("Name: " + feature.properties.Name + "<br> Phone Number: " + feature.properties.number_pho + "<br><a href='https://www.google.com/maps/search/%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9+%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9+%D9%84%D8%AF%D9%81%D8%A7%D8%B9+%D8%A7%D9%84%D9%85%D8%AF%D9%86%D9%8A%E2%80%AD/@31.8912864,35.1572997,13z?entry=ttu' target='_blank'>الموقع على خرائط جوجل</a>");
-        }
-      }).addTo(civilDefenseLayer).addTo(map).bringToFront();
-    });
+    const civilDefenseLayer = createGeoJsonLayer('ciivilld.geojson', 'Name', {color: 'red'});
+    civilDefenseLayer.addTo(map);
 
     // For Police.geojson
-    const policeLayer = L.layerGroup();
-    $.getJSON("Police.geojson", function(police) {
-      L.geoJson(police, {
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: "orange",
-            fillOpacity: 1,
-            color: "orange",
-            weight: 1.0,
-            opacity: 0.7
-          });
-        },
+    const policeLayer = createGeoJsonLayer('Police.geojson', 'NAME_AR_1', {color: 'orange'});
+    policeLayer.addTo(map);
+
+    // Function to create GeoJSON layer
+    function createGeoJsonLayer(url, propertyName, style) {
+      var layer = L.geoJson(null, {
+        style: style,
         onEachFeature: function(feature, layer) {
-          layer.bindPopup("Name: " + feature.properties.NAME_AR_1 + "<br> Phone Number: " + feature.properties.number_pho);
+          layer.bindPopup(feature.properties[propertyName] || "No name");
         }
-      }).addTo(policeLayer).addTo(map).bringToFront();
-    });
+      });
 
-    // دالة لإنشاء طبقة GeoJSON
-        function createGeoJsonLayer(url, propertyName, style) {
-            var layer = L.geoJson(null, {
-                style: style,
-                onEachFeature: function (feature, layer) {
-                    layer.bindPopup(feature.properties[propertyName] || "No name");
-                }
-            });
+      fetch(url)
+        .then(response => response.json())
+        .then(data => layer.addData(data))
+        .catch(error => console.error('Error loading GeoJSON:', error));
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => layer.addData(data))
-                .catch(error => console.error('Error loading GeoJSON:', error));
+      return layer;
+    }
 
-            return layer;
+    // Function to create search control for layer
+    function createSearchControl(layer, propertyName) {
+      var searchControl = new L.Control.Search({
+        layer: layer,
+        propertyName: propertyName,
+        marker: false,
+        moveToLocation: function(latlng, title, map) {
+          map.setView(latlng, 15);
         }
+      });
 
-        // إنشاء الطبقات
-        var policeLayer = createGeoJsonLayer('Police.geojson', 'NAME_AR_1', {color: 'blue'});
-        var civilLayer = createGeoJsonLayer('ciivilld.geojson', 'Name', {color: 'red'});
-        var hospitalLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', {color: 'green'});
-        var pharmacyLayer = createGeoJsonLayer('pharmacy.geojson', 'NAME_AR', {color: 'purple'});
-        var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', {color: 'orange'});
-        // دالة لإنشاء أداة البحث للطبقة
-        function createSearchControl(layer, propertyName) {
-            var searchControl = new L.Control.Search({
-                layer: layer,
-                propertyName: propertyName,
-                marker: false,
-                moveToLocation: function (latlng, title, map) {
-                    map.setView(latlng, 15); // تكبير الخريطة عند العثور على نتيجة
-                }
-            });
+      searchControl.on('search:locationfound', function(e) {
+        e.layer.setStyle({ fillColor: '#3f0', color: '#0f0' });
+        if (e.layer._popup)
+          e.layer.openPopup();
+      }).on('search:collapsed', function(e) {
+        layer.eachLayer(function(layer) {
+          layer.resetStyle(layer);
+        });
+      });
 
-            searchControl.on('search:locationfound', function(e) {
-                e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
-                if (e.layer._popup)
-                    e.layer.openPopup();
-            }).on('search:collapsed', function(e) {
-                layer.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
-                    layer.resetStyle(layer);
-                });
-            });
+      return searchControl;
+    }
 
-            return searchControl;
-        }
+    // Add search controls to map
+    var hospitalSearch = createSearchControl(hospitalsLayer, 'NAME_AR');
+    var pharmacySearch = createSearchControl(pharmaciesLayer, 'NAME_AR');
+    var policeSearch = createSearchControl(policeLayer, 'NAME_AR_1');
+    var civilSearch = createSearchControl(civilDefenseLayer, 'Name');
 
-        // إضافة أدوات البحث للطبقات المختلفة
-        var hospitalSearch = createSearchControl(hospitalLayer, 'NAME_AR');
-        var pharmacySearch = createSearchControl(pharmacyLayer, 'NAME_AR');
-        var policeSearch = createSearchControl(policeLayer, 'NAME_AR_1');
-        var civilSearch = createSearchControl(civilLayer, 'Name');
+    map.addControl(hospitalSearch);
+    map.addControl(pharmacySearch);
+    map.addControl(policeSearch);
+    map.addControl(civilSearch);
 
-        // إضافة أدوات البحث إلى الخريطة
-        map.addControl(hospitalSearch);
-        map.addControl(pharmacySearch);
-        map.addControl(policeSearch);
-        map.addControl(civilSearch);
-        
   </script>
 </body>
 
