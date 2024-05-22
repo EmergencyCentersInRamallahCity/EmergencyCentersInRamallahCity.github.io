@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>GeoJSON Search Tool</title>
+    <title>Leaflet Map</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -15,54 +15,31 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
     <script>
-        // إنشاء الخريطة
-        var map = L.map('map').setView([31.95, 35.2], 13);
+        var map = L.map('map').setView([31.92, 35.20], 13);
 
-        // إضافة طبقة الأساس
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19
         }).addTo(map);
 
-        // دالة لإنشاء طبقة GeoJSON
-        function createGeoJsonLayer(url, propertyName, style) {
-            var layer = L.geoJson(null, {
-                style: style,
-                onEachFeature: function (feature, layer) {
-                    layer.bindPopup(feature.properties[propertyName] || "No name");
+        var emergencyCenters = L.geoJSON(null, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.NAME_AR) {
+                    layer.bindPopup(feature.properties.NAME_AR);
                 }
-            });
+            }
+        });
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    layer.addData(data);
-                    addToSearchData(layer, propertyName); // إضافة البيانات إلى البحث هنا
-                })
-                .catch(error => console.error('Error loading GeoJSON:', error));
+        fetch('https://raw.githubusercontent.com/basmaqasem1531/basmaqasem1531.github.io/main/emergency_centers.geojson')
+            .then(response => response.json())
+            .then(data => {
+                emergencyCenters.addData(data);
+                emergencyCenters.addTo(map);
+                addToSearchData(emergencyCenters, 'NAME_AR');
+            })
+            .catch(error => console.error('Error loading GeoJSON:', error));
 
-            return layer;
-        }
-
-        // إنشاء الطبقات
-        var policeLayer = createGeoJsonLayer('Police.geojson', 'NAME_AR_1', {color: 'blue'});
-        var civilLayer = createGeoJsonLayer('ciivilld.geojson', 'Name', {color: 'red'});
-        var hospitalLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', {color: 'green'});
-        var pharmacyLayer = createGeoJsonLayer('pharmacy.geojson', 'NAME_AR', {color: 'purple'});
-        var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', {color: 'orange'});
-
-        // إضافة الطبقات إلى الخريطة
-        policeLayer.addTo(map);
-        civilLayer.addTo(map);
-        hospitalLayer.addTo(map);
-        pharmacyLayer.addTo(map);
-        zonesLayer.addTo(map);
-
-        // إنشاء مجموعة تحتوي على جميع الطبقات
-        var allLayers = L.layerGroup([policeLayer, civilLayer, hospitalLayer, pharmacyLayer, zonesLayer]);
-
-        // إنشاء بيانات البحث الموحدة
         var dataForSearch = [];
-        
+
         function addToSearchData(layer, propertyName) {
             layer.eachLayer(function (l) {
                 if (l.feature && l.feature.properties[propertyName]) {
@@ -77,9 +54,8 @@
             });
         }
 
-        // إعداد أداة البحث
         var searchControl = new L.Control.Search({
-            layer: allLayers,
+            layer: emergencyCenters,
             sourceData: function(text, callback) {
                 var results = {};
                 dataForSearch.forEach(function(item) {
@@ -94,7 +70,7 @@
             marker: false,
             moveToLocation: function(latlng, title, map) {
                 var zoom = 15;
-                map.setView(latlng, zoom); // تكبير الخريطة عند العثور على نتيجة
+                map.setView(latlng, zoom);
             }
         });
 
@@ -104,14 +80,14 @@
             if (layer._popup)
                 layer.openPopup();
         }).on('search:collapsed', function(e) {
-            allLayers.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
+            emergencyCenters.eachLayer(function(layer) {
                 if (layer.resetStyle) {
                     layer.resetStyle();
                 }
             });
         });
 
-        map.addControl(searchControl); // إضافة أداة البحث إلى الخريطة
+        map.addControl(searchControl);
     </script>
 </body>
 </html>
