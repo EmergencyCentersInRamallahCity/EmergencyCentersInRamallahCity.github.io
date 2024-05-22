@@ -68,11 +68,11 @@
                 if (l.feature && l.feature.properties[propertyName]) {
                     dataForSearch.push({
                         loc: l.getLatLng(),
-                        title: l.feature.properties[propertyName],
-                        layer: l
+                        title: l.feature.properties[propertyName]
                     });
                 }
             });
+            console.log(`Data for search (${propertyName}):`, dataForSearch);
         }
 
         // إعداد أداة البحث
@@ -96,9 +96,10 @@
         });
 
         searchControl.on('search:locationfound', function(e) {
-            e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
-            if (e.layer._popup)
-                e.layer.openPopup();
+            var layer = e.layer;
+            layer.setStyle({fillColor: '#3f0', color: '#0f0'});
+            if (layer._popup)
+                layer.openPopup();
         }).on('search:collapsed', function(e) {
             allLayers.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
                 allLayers.resetStyle(layer);
