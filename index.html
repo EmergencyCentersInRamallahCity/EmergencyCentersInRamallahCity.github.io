@@ -34,7 +34,10 @@
 
             fetch(url)
                 .then(response => response.json())
-                .then(data => layer.addData(data))
+                .then(data => {
+                    layer.addData(data);
+                    addToSearchData(layer, propertyName); // إضافة البيانات إلى البحث هنا
+                })
                 .catch(error => console.error('Error loading GeoJSON:', error));
 
             return layer;
@@ -61,42 +64,41 @@
         var dataForSearch = [];
         
         function addToSearchData(layer, propertyName) {
-            layer.eachLayer(function (layer) {
-                if (layer.feature && layer.feature.properties[propertyName]) {
+            layer.eachLayer(function (l) {
+                if (l.feature && l.feature.properties[propertyName]) {
                     dataForSearch.push({
-                        loc: layer.getLatLng(),
-                        title: layer.feature.properties[propertyName]
+                        loc: l.getLatLng(),
+                        title: l.feature.properties[propertyName],
+                        layer: l
                     });
                 }
             });
         }
 
-        addToSearchData(policeLayer, 'NAME_AR_1');
-        addToSearchData(civilLayer, 'Name');
-        addToSearchData(hospitalLayer, 'NAME_AR');
-        addToSearchData(pharmacyLayer, 'NAME_AR');
-        
         // إعداد أداة البحث
         var searchControl = new L.Control.Search({
             layer: allLayers,
             sourceData: function(text, callback) {
-                var results = dataForSearch.filter(function(item) {
-                    return item.title.toLowerCase().includes(text.toLowerCase());
+                var results = {};
+                dataForSearch.forEach(function(item) {
+                    if (item.title.toLowerCase().includes(text.toLowerCase())) {
+                        results[item.title] = item.loc;
+                    }
                 });
                 callback(results);
             },
             textPlaceholder: 'Search...',
             marker: false,
             moveToLocation: function(latlng, title, map) {
-                map.setView(latlng, 15); // تكبير الخريطة عند العثور على نتيجة
+                var zoom = 15;
+                map.setView(latlng, zoom); // تكبير الخريطة عند العثور على نتيجة
             }
         });
 
         searchControl.on('search:locationfound', function(e) {
-            var layer = e.layer;
-            layer.setStyle({fillColor: '#3f0', color: '#0f0'});
-            if (layer._popup)
-                layer.openPopup();
+            e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
+            if (e.layer._popup)
+                e.layer.openPopup();
         }).on('search:collapsed', function(e) {
             allLayers.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
                 allLayers.resetStyle(layer);
@@ -107,3 +109,4 @@
     </script>
 </body>
 </html>
+
