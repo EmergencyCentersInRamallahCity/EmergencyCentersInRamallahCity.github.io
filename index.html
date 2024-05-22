@@ -186,48 +186,48 @@
     });
 
     // Search control for hospitals
-const hospitalSearch = new L.Control.Search({
-  layer: hospitalsLayer,
-  propertyName: 'NAME_AR',
-  marker: false,
-  moveToLocation: function(latlng, title, map) {
-    map.setView(latlng, 17); // set the zoom level here
-  }
-});
-map.addControl(hospitalSearch);
+    const hospitalSearch = new L.Control.Search({
+      layer: hospitalsLayer,
+      propertyName: 'NAME_AR',
+      marker: false,
+      moveToLocation: function(latlng, title, map) {
+        map.setView(latlng, 17); // set the zoom level here
+      }
+    });
+    map.addControl(hospitalSearch);
 
-// Search control for pharmacies
-const pharmacySearch = new L.Control.Search({
-  layer: pharmaciesLayer,
-  propertyName: 'NAME_AR',
-  marker: false,
-  moveToLocation: function(latlng, title, map) {
-    map.setView(latlng, 17); // set the zoom level here
-  }
-});
-map.addControl(pharmacySearch);
+    // Search control for pharmacies
+    const pharmacySearch = new L.Control.Search({
+      layer: pharmaciesLayer,
+      propertyName: 'NAME_AR',
+      marker: false,
+      moveToLocation: function(latlng, title, map) {
+        map.setView(latlng, 17); // set the zoom level here
+      }
+    });
+    map.addControl(pharmacySearch);
 
-// Search control for civil defense centers
-const civilDefenseSearch = new L.Control.Search({
-  layer: civilDefenseLayer,
-  propertyName: 'Name',
-  marker: false,
-  moveToLocation: function(latlng, title, map) {
-    map.setView(latlng, 17); // set the zoom level here
-  }
-});
-map.addControl(civilDefenseSearch);
+    // Search control for civil defense centers
+    const civilDefenseSearch = new L.Control.Search({
+      layer: civilDefenseLayer,
+      propertyName: 'Name',
+      marker: false,
+      moveToLocation: function(latlng, title, map) {
+        map.setView(latlng, 17); // set the zoom level here
+      }
+    });
+    map.addControl(civilDefenseSearch);
 
-// Search control for police stations
-const policeSearch = new L.Control.Search({
-  layer: policeLayer,
-  propertyName: 'NAME_AR_1',
-  marker: false,
-  moveToLocation: function(latlng, title, map) {
-    map.setView(latlng, 17); // set the zoom level here
-  }
-});
-map.addControl(policeSearch);
+    // Search control for police stations
+    const policeSearch = new L.Control.Search({
+      layer: policeLayer,
+      propertyName: 'NAME_AR_1',
+      marker: false,
+      moveToLocation: function(latlng, title, map) {
+        map.setView(latlng, 17); // set the zoom level here
+      }
+    });
+    map.addControl(policeSearch);
 
   </script>
 </body>
