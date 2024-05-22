@@ -70,9 +70,9 @@
                         loc: l.getLatLng(),
                         title: l.feature.properties[propertyName]
                     });
+                    console.log('Added to search data:', l.feature.properties[propertyName], l.getLatLng());
                 }
             });
-            console.log(`Data for search (${propertyName}):`, dataForSearch);
         }
 
         // إعداد أداة البحث
@@ -85,6 +85,7 @@
                         results[item.title] = item.loc;
                     }
                 });
+                console.log('Search results for "' + text + '":', results);
                 callback(results);
             },
             textPlaceholder: 'Search...',
