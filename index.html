@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css" />
     <style>
         #map { height: 600px; }
+        .search-container {
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+        }
+        .search-container h3 {
+            margin: 0;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -55,42 +64,41 @@
         zonesLayer.addTo(map);
 
         // دالة لإنشاء أداة البحث للطبقة مع عنوان
-        function createSearchControl(layer, propertyName, title) {
-            var searchControl = new L.Control.Search({
+        function createSearchControl(layer, propertyName) {
+            return new L.Control.Search({
                 layer: layer,
                 propertyName: propertyName,
                 marker: false,
                 initial: false,
-                textPlaceholder: 'Search ' + title,
                 moveToLocation: function (latlng, title, map) {
                     map.setView(latlng, 15); // تكبير الخريطة عند العثور على نتيجة
                 }
             });
+        }
 
-            searchControl.on('search:locationfound', function(e) {
-                e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
-                if (e.layer._popup)
-                    e.layer.openPopup();
-            }).on('search:collapsed', function(e) {
-                layer.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
-                    layer.setStyle({fillColor: '', color: ''});
-                });
-            });
+        // دالة لإضافة أداة البحث مع العنوان إلى الخريطة
+        function addSearchControlWithTitle(map, layer, propertyName, title) {
+            var searchControl = createSearchControl(layer, propertyName);
+            map.addControl(searchControl);
 
-            return searchControl;
+            var searchContainer = searchControl.getContainer();
+            var titleElement = document.createElement('h3');
+            titleElement.innerText = title;
+
+            var containerDiv = document.createElement('div');
+            containerDiv.classList.add('search-container');
+            containerDiv.appendChild(titleElement);
+            containerDiv.appendChild(searchContainer);
+
+            var leafletControlContainer = document.querySelector('.leaflet-control-container');
+            leafletControlContainer.appendChild(containerDiv);
         }
 
         // إضافة أدوات البحث للطبقات المختلفة مع عناوين
-        var hospitalSearch = createSearchControl(hospitalLayer, 'NAME_AR', 'Hospitals');
-        var pharmacySearch = createSearchControl(pharmacyLayer, 'NAME_AR', 'Pharmacies');
-        var policeSearch = createSearchControl(policeLayer, 'NAME_AR_1', 'Police Stations');
-        var civilSearch = createSearchControl(civilLayer, 'Name', 'Civil Defense Centers');
-
-        // إضافة أدوات البحث إلى الخريطة
-        map.addControl(hospitalSearch);
-        map.addControl(pharmacySearch);
-        map.addControl(policeSearch);
-        map.addControl(civilSearch);
+        addSearchControlWithTitle(map, hospitalLayer, 'NAME_AR', 'Hospitals');
+        addSearchControlWithTitle(map, pharmacyLayer, 'NAME_AR', 'Pharmacies');
+        addSearchControlWithTitle(map, policeLayer, 'NAME_AR_1', 'Police Stations');
+        addSearchControlWithTitle(map, civilLayer, 'Name', 'Civil Defense Centers');
     </script>
 </body>
 </html>
