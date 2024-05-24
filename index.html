@@ -63,42 +63,40 @@
         pharmacyLayer.addTo(map);
         zonesLayer.addTo(map);
 
-        // دالة لإنشاء أداة البحث للطبقة مع عنوان
-        function createSearchControl(layer, propertyName) {
-            return new L.Control.Search({
-                layer: layer,
-                propertyName: propertyName,
+        // دالة لإنشاء أداة البحث للطبقة
+        function createSearchControl(layers, propertyNames) {
+            var searchControl = new L.Control.Search({
+                layer: L.featureGroup(layers),
+                propertyName: propertyNames,
                 marker: false,
                 initial: false,
+                textPlaceholder: 'Search in all layers',
                 moveToLocation: function (latlng, title, map) {
                     map.setView(latlng, 15); // تكبير الخريطة عند العثور على نتيجة
                 }
             });
+
+            searchControl.on('search:locationfound', function(e) {
+                e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
+                if (e.layer._popup)
+                    e.layer.openPopup();
+            }).on('search:collapsed', function(e) {
+                layers.forEach(function(layer) {
+                    layer.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
+                        layer.setStyle({fillColor: '', color: ''});
+                    });
+                });
+            });
+
+            return searchControl;
         }
 
-        // دالة لإضافة أداة البحث مع العنوان إلى الخريطة
-        function addSearchControlWithTitle(map, layer, propertyName, title) {
-            var searchControl = createSearchControl(layer, propertyName);
-            map.addControl(searchControl);
-
-            var searchContainer = searchControl.getContainer();
-            var titleElement = document.createElement('h3');
-            titleElement.innerText = title;
-
-            var containerDiv = document.createElement('div');
-            containerDiv.classList.add('search-container');
-            containerDiv.appendChild(titleElement);
-            containerDiv.appendChild(searchContainer);
-
-            var leafletControlContainer = document.querySelector('.leaflet-control-container');
-            leafletControlContainer.appendChild(containerDiv);
-        }
-
-        // إضافة أدوات البحث للطبقات المختلفة مع عناوين
-        addSearchControlWithTitle(map, hospitalLayer, 'NAME_AR', 'Hospitals');
-        addSearchControlWithTitle(map, pharmacyLayer, 'NAME_AR', 'Pharmacies');
-        addSearchControlWithTitle(map, policeLayer, 'NAME_AR_1', 'Police Stations');
-        addSearchControlWithTitle(map, civilLayer, 'Name', 'Civil Defense Centers');
+        // إضافة أداة البحث المدمجة إلى الخريطة
+        var combinedSearch = createSearchControl(
+            [hospitalLayer, pharmacyLayer, policeLayer, civilLayer],
+            ['NAME_AR', 'NAME_AR', 'NAME_AR_1', 'Name']
+        );
+        map.addControl(combinedSearch);
     </script>
 </body>
 </html>
