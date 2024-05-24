@@ -27,7 +27,7 @@
         var map = L.map('map').setView([31.95, 35.2], 13);
 
         // إضافة طبقة الأساس
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        var baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19
         }).addTo(map);
 
@@ -69,11 +69,11 @@
         }
 
         // إنشاء الطبقات مع الألوان المطلوبة
+        var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', null, {color: 'orange', fillOpacity: 0});
         var hospitalLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', pointToLayerFunctionFactory('red'), null);
         var civilLayer = createGeoJsonLayer('ciivilld.geojson', 'Name', pointToLayerFunctionFactory('yellow'), null);
         var pharmacyLayer = createGeoJsonLayer('pharmacy.geojson', 'NAME_AR', pointToLayerFunctionFactory('green'), null);
         var policeLayer = createGeoJsonLayer('Police.geojson', 'NAME_AR_1', pointToLayerFunctionFactory('blue'), null);
-        var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', null, {color: 'orange', fillOpacity: 0});
 
         // إضافة الطبقات إلى الخريطة
         zonesLayer.addTo(map);
@@ -82,45 +82,31 @@
         pharmacyLayer.addTo(map);
         policeLayer.addTo(map);
 
-        // دالة لإنشاء أداة البحث للطبقة مع عنوان
-        function createSearchControl(layer, propertyName, title) {
-            var searchControl = new L.Control.Search({
-                layer: layer,
-                propertyName: propertyName,
-                marker: false,
-                initial: false,
-                textPlaceholder: 'Search ' + title,
-                moveToLocation: function (latlng, title, map) {
-                    map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
-                }
-            });
+        // إضافة تحكم بالطبقات
+        var overlayMaps = {
+            "Hospitals": hospitalLayer,
+            "Civil Defense Centers": civilLayer,
+            "Pharmacies": pharmacyLayer,
+            "Police Stations": policeLayer,
+            "Ramallah Zones": zonesLayer
+        };
 
-            searchControl.on('search:locationfound', function(e) {
-                e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
-                if (e.layer._popup)
-                    e.layer.openPopup();
-            }).on('search:collapsed', function(e) {
-                layer.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
-                    layer.setStyle({fillColor: '', color: ''});
-                });
-            });
+        L.control.layers(null, overlayMaps).addTo(map);
 
-            return searchControl;
+        // تحكم في حجم الخريطة بناءً على حجم الشاشة
+        var mapDiv = document.getElementById('map');
+        mapDiv.style.width = window.innerWidth + 'px';
+        mapDiv.style.height = window.innerHeight + 'px';
+
+        // تحقق من استجابة العناصر التحكم
+        if (window.innerWidth < 600) {
+            map.removeControl(hospitalSearch);
+            map.removeControl(pharmacySearch);
+            map.removeControl(policeSearch);
+            map.removeControl(civilSearch);
         }
 
-        // إضافة أدوات البحث للطبقات المختلفة مع عناوين
-        var hospitalSearch = createSearchControl(hospitalLayer, 'NAME_AR', 'Hospitals');
-        var pharmacySearch = createSearchControl(pharmacyLayer, 'NAME_AR', 'Pharmacies');
-        var policeSearch = createSearchControl(policeLayer, 'NAME_AR_1', 'Police Stations');
-        var civilSearch = createSearchControl(civilLayer, 'Name', 'Civil Defense Centers');
-
-        // إضافة أدوات البحث إلى الخريطة
-        map.addControl(hospitalSearch);
-        map.addControl(pharmacySearch);
-        map.addControl(policeSearch);
-        map.addControl(civilSearch);
-
-        // إضافة مفتاح الخريطة في أسفل اليمين
+        // إضافة مفتاح الخريطة وفتحه تلقائياً
         var legend = L.control({position: 'bottomright'});
 
         legend.onAdd = function (map) {
@@ -134,8 +120,7 @@
             return div;
         };
 
-        legend.addTo(map);
+        legend.addTo(map).openPopup();
     </script>
 </body>
 </html>
-
