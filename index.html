@@ -97,7 +97,7 @@
      // دالة لإنشاء أداة البحث العامة
 function createSearchControl(layers) {
     var searchControl = new L.Control.Search({
-        layer: L.layerGroup(layers),
+        layer: L.featureGroup(layers),
         propertyName: ['NAME_AR', 'Name', 'NAME_AR_1'],
         marker: false,
         initial: false,
