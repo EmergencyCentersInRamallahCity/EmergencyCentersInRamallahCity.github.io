@@ -82,7 +82,7 @@
         pharmacyLayer.addTo(map);
         policeLayer.addTo(map);
 
-        // إضافة تحكم بالطبقات
+        // إنشاء تحكم بالطبقات
         var overlayMaps = {
             "Hospitals": hospitalLayer,
             "Civil Defense Centers": civilLayer,
@@ -93,20 +93,59 @@
 
         L.control.layers(null, overlayMaps).addTo(map);
 
-        // تحكم في حجم الخريطة بناءً على حجم الشاشة
-        var mapDiv = document.getElementById('map');
-        mapDiv.style.width = window.innerWidth + 'px';
-        mapDiv.style.height = window.innerHeight + 'px';
+        // إضافة أدوات البحث
+        var hospitalSearch = new L.Control.Search({
+            layer: hospitalLayer,
+            propertyName: 'NAME_AR',
+            marker: false,
+            initial: false,
+            textPlaceholder: 'Search Hospitals',
+            moveToLocation: function (latlng, title, map) {
+                map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
+            }
+        });
 
-        // تحقق من استجابة العناصر التحكم
-        if (window.innerWidth < 600) {
-            map.removeControl(hospitalSearch);
-            map.removeControl(pharmacySearch);
-            map.removeControl(policeSearch);
-            map.removeControl(civilSearch);
-        }
+        var pharmacySearch = new L.Control.Search({
+            layer: pharmacyLayer,
+            propertyName: 'NAME_AR',
+            marker: false,
+            initial: false,
+            textPlaceholder: 'Search Pharmacies',
+            moveToLocation: function (latlng, title, map) {
+                map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
+            }
+        });
 
-        // إضافة مفتاح الخريطة وفتحه تلقائياً
+        var policeSearch = new L.Control.Search({
+            layer: policeLayer,
+            propertyName: 'NAME_AR_1',
+            marker: false,
+            initial: false,
+            textPlaceholder: 'Search Police Stations',
+            moveToLocation: function (latlng, title, map) {
+                map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
+            }
+        });
+
+        var civilSearch = new L.Control.Search({
+            layer: civilLayer,
+            propertyName: 'Name',
+            marker: false,
+            initial: false,
+            textPlaceholder: 'Search Civil Defense Centers',
+            moveToLocation: function (latlng, title, map) {
+                map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
+
+            }
+        });
+
+        // إضافة أدوات البحث إلى الخريطة
+        map.addControl(hospitalSearch);
+        map.addControl(pharmacySearch);
+        map.addControl(policeSearch);
+        map.addControl(civilSearch);
+
+        // إضافة مفتاح الخريطة وتحديثه ليعكس الألوان
         var legend = L.control({position: 'bottomright'});
 
         legend.onAdd = function (map) {
@@ -120,7 +159,7 @@
             return div;
         };
 
-        legend.addTo(map).openPopup();
+        legend.addTo(map);
     </script>
 </body>
 </html>
