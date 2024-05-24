@@ -96,22 +96,28 @@
         // إضافة أدوات البحث
      // دالة لإنشاء أداة البحث العامة
 function createUnifiedSearchControl(layers) {
-    var searchControl = new L.Control.Search({
-        layer: L.featureGroup(layers),
-        propertyName: ['NAME_AR', 'Name', 'NAME_AR_1'],
-        marker: false,
-        initial: false,
-        textPlaceholder: 'Search for a location...',
-        moveToLocation: function (latlng, title, map) {
-            map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
-        }
+    var searchControl = new L.Control.geosearch({
+        position: 'topright',
+        provider: new L.GeoSearch.Provider.OpenStreetMap(),
+        showMarker: false, // عدم عرض علامة على الموقع المحدد
+        showPopup: false, // عدم عرض نافذة منبثقة عند البحث
+        retainZoomLevel: false, // تعيين مستوى التكبير إلى مستوى البحث
+        autoComplete: true, // تمكين الإكمال التلقائي
+        searchLabel: 'Enter address or place', // نص البحث
+        keepResult: true // الاحتفاظ بالنتيجة بعد البحث
+    });
+
+    // استجابة الأداة للنتائج
+    searchControl.on('results', function(data){
+        // عرض النتائج
+        console.log(data);
     });
 
     return searchControl;
 }
 
 // إنشاء أداة البحث العامة وإضافتها إلى الخريطة
-var unifiedSearchControl = createUnifiedSearchControl([hospitalLayer, pharmacyLayer, policeLayer, civilLayer]);
+var unifiedSearchControl = createUnifiedSearchControl();
 map.addControl(unifiedSearchControl);
 
 
