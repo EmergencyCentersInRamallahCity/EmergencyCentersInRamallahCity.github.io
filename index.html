@@ -94,10 +94,10 @@
         L.control.layers(null, overlayMaps).addTo(map);
 
         // إضافة أدوات البحث
-      // دالة لإنشاء أداة البحث العامة
+     // دالة لإنشاء أداة البحث العامة
 function createSearchControl(layers) {
     var searchControl = new L.Control.Search({
-        layer: layers,
+        layer: L.layerGroup(layers),
         propertyName: ['NAME_AR', 'Name', 'NAME_AR_1'],
         marker: false,
         initial: false,
@@ -113,12 +113,6 @@ function createSearchControl(layers) {
 var searchControl = createSearchControl([hospitalLayer, pharmacyLayer, policeLayer, civilLayer]);
 map.addControl(searchControl);
 
-
-        // إضافة أدوات البحث إلى الخريطة
-        map.addControl(hospitalSearch);
-        map.addControl(pharmacySearch);
-        map.addControl(policeSearch);
-        map.addControl(civilSearch);
 
         // إضافة مفتاح الخريطة وتحديثه ليعكس الألوان
         var legend = L.control({position: 'bottomright'});
@@ -138,3 +132,4 @@ map.addControl(searchControl);
     </script>
 </body>
 </html>
+
