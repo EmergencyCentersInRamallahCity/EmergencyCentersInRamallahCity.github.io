@@ -94,50 +94,25 @@
         L.control.layers(null, overlayMaps).addTo(map);
 
         // إضافة أدوات البحث
-        var hospitalSearch = new L.Control.Search({
-            layer: hospitalLayer,
-            propertyName: 'NAME_AR',
-            marker: false,
-            initial: false,
-            textPlaceholder: 'Search Hospitals',
-            moveToLocation: function (latlng, title, map) {
-                map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
-            }
-        });
+      // دالة لإنشاء أداة البحث العامة
+function createSearchControl(layers) {
+    var searchControl = new L.Control.Search({
+        layer: layers,
+        propertyName: ['NAME_AR', 'Name', 'NAME_AR_1'],
+        marker: false,
+        initial: false,
+        moveToLocation: function (latlng, title, map) {
+            map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
+        }
+    });
 
-        var pharmacySearch = new L.Control.Search({
-            layer: pharmacyLayer,
-            propertyName: 'NAME_AR',
-            marker: false,
-            initial: false,
-            textPlaceholder: 'Search Pharmacies',
-            moveToLocation: function (latlng, title, map) {
-                map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
-            }
-        });
+    return searchControl;
+}
 
-        var policeSearch = new L.Control.Search({
-            layer: policeLayer,
-            propertyName: 'NAME_AR_1',
-            marker: false,
-            initial: false,
-            textPlaceholder: 'Search Police Stations',
-            moveToLocation: function (latlng, title, map) {
-                map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
-            }
-        });
+// إنشاء أداة البحث العامة وإضافتها إلى الخريطة
+var searchControl = createSearchControl([hospitalLayer, pharmacyLayer, policeLayer, civilLayer]);
+map.addControl(searchControl);
 
-        var civilSearch = new L.Control.Search({
-            layer: civilLayer,
-            propertyName: 'Name',
-            marker: false,
-            initial: false,
-            textPlaceholder: 'Search Civil Defense Centers',
-            moveToLocation: function (latlng, title, map) {
-                map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
-
-            }
-        });
 
         // إضافة أدوات البحث إلى الخريطة
         map.addControl(hospitalSearch);
