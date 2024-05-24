@@ -63,10 +63,11 @@
         pharmacyLayer.addTo(map);
         zonesLayer.addTo(map);
 
-        // دالة لإنشاء أداة البحث للطبقة
-        function createSearchControl(layers, propertyNames) {
+        // دالة لإنشاء أداة البحث الموحدة
+        function createCombinedSearchControl(layers, propertyNames) {
+            var featureGroup = L.featureGroup(layers);
             var searchControl = new L.Control.Search({
-                layer: L.featureGroup(layers),
+                layer: featureGroup,
                 propertyName: propertyNames,
                 marker: false,
                 initial: false,
@@ -81,22 +82,21 @@
                 if (e.layer._popup)
                     e.layer.openPopup();
             }).on('search:collapsed', function(e) {
-                layers.forEach(function(layer) {
-                    layer.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
-                        layer.setStyle({fillColor: '', color: ''});
-                    });
+                featureGroup.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
+                    layer.setStyle({fillColor: '', color: ''});
                 });
             });
 
             return searchControl;
         }
 
-        // إضافة أداة البحث المدمجة إلى الخريطة
-        var combinedSearch = createSearchControl(
+        // إضافة أداة البحث الموحدة إلى الخريطة
+        var combinedSearch = createCombinedSearchControl(
             [hospitalLayer, pharmacyLayer, policeLayer, civilLayer],
-            ['NAME_AR', 'NAME_AR', 'NAME_AR_1', 'Name']
+            'properties.NAME_AR,properties.NAME_AR,properties.NAME_AR_1,properties.Name'
         );
         map.addControl(combinedSearch);
     </script>
 </body>
 </html>
+
