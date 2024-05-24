@@ -95,12 +95,13 @@
 
         // إضافة أدوات البحث
      // دالة لإنشاء أداة البحث العامة
-function createSearchControl(layers) {
+function createUnifiedSearchControl(layers) {
     var searchControl = new L.Control.Search({
         layer: L.featureGroup(layers),
         propertyName: ['NAME_AR', 'Name', 'NAME_AR_1'],
         marker: false,
         initial: false,
+        textPlaceholder: 'Search for a location...',
         moveToLocation: function (latlng, title, map) {
             map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
         }
@@ -110,8 +111,9 @@ function createSearchControl(layers) {
 }
 
 // إنشاء أداة البحث العامة وإضافتها إلى الخريطة
-var searchControl = createSearchControl([hospitalLayer, pharmacyLayer, policeLayer, civilLayer]);
-map.addControl(searchControl);
+var unifiedSearchControl = createUnifiedSearchControl([hospitalLayer, pharmacyLayer, policeLayer, civilLayer]);
+map.addControl(unifiedSearchControl);
+
 
 
         // إضافة مفتاح الخريطة وتحديثه ليعكس الألوان
