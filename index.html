@@ -8,15 +8,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css" />
     <style>
         #map { height: 600px; }
-        .search-container {
-            position: relative;
-            display: inline-block;
-            margin: 5px;
-        }
-        .search-container h3 {
-            margin: 0;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
@@ -63,15 +54,14 @@
         pharmacyLayer.addTo(map);
         zonesLayer.addTo(map);
 
-        // دالة لإنشاء أداة البحث الموحدة
-        function createCombinedSearchControl(layers, propertyNames) {
-            var featureGroup = L.featureGroup(layers);
+        // دالة لإنشاء أداة البحث للطبقة مع عنوان
+        function createSearchControl(layer, propertyName, title) {
             var searchControl = new L.Control.Search({
-                layer: featureGroup,
-                propertyName: propertyNames,
+                layer: layer,
+                propertyName: propertyName,
                 marker: false,
                 initial: false,
-                textPlaceholder: 'Search in all layers',
+                textPlaceholder: 'Search ' + title,
                 moveToLocation: function (latlng, title, map) {
                     map.setView(latlng, 15); // تكبير الخريطة عند العثور على نتيجة
                 }
@@ -82,7 +72,7 @@
                 if (e.layer._popup)
                     e.layer.openPopup();
             }).on('search:collapsed', function(e) {
-                featureGroup.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
+                layer.eachLayer(function(layer) {  // إعادة تعيين نمط الطبقة
                     layer.setStyle({fillColor: '', color: ''});
                 });
             });
@@ -90,13 +80,17 @@
             return searchControl;
         }
 
-        // إضافة أداة البحث الموحدة إلى الخريطة
-        var combinedSearch = createCombinedSearchControl(
-            [hospitalLayer, pharmacyLayer, policeLayer, civilLayer],
-            'properties.NAME_AR,properties.NAME_AR,properties.NAME_AR_1,properties.Name'
-        );
-        map.addControl(combinedSearch);
+        // إضافة أدوات البحث للطبقات المختلفة مع عناوين
+        var hospitalSearch = createSearchControl(hospitalLayer, 'NAME_AR', 'Hospitals');
+        var pharmacySearch = createSearchControl(pharmacyLayer, 'NAME_AR', 'Pharmacies');
+        var policeSearch = createSearchControl(policeLayer, 'NAME_AR_1', 'Police Stations');
+        var civilSearch = createSearchControl(civilLayer, 'Name', 'Civil Defense Centers');
+
+        // إضافة أدوات البحث إلى الخريطة
+        map.addControl(hospitalSearch);
+        map.addControl(pharmacySearch);
+        map.addControl(policeSearch);
+        map.addControl(civilSearch);
     </script>
 </body>
 </html>
-
