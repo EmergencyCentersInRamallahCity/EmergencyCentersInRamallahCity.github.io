@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css" />
     <style>
         #map { height: 600px; }
+        .legend { 
+            background: white; 
+            line-height: 1.5em;
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -15,7 +23,7 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
     <script>
-        // إنشاء الخريطة
+        // إنشاء الخريطة وتعيين المركز لعرض طبقة RamallahZones في منتصف الخريطة
         var map = L.map('map').setView([31.95, 35.2], 13);
 
         // إضافة طبقة الأساس
@@ -40,12 +48,12 @@
             return layer;
         }
 
-        // إنشاء الطبقات
+        // إنشاء الطبقات مع الألوان المطلوبة
         var policeLayer = createGeoJsonLayer('Police.geojson', 'NAME_AR_1', {color: 'blue'});
         var civilLayer = createGeoJsonLayer('ciivilld.geojson', 'Name', {color: 'red'});
         var hospitalLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', {color: 'green'});
         var pharmacyLayer = createGeoJsonLayer('pharmacy.geojson', 'NAME_AR', {color: 'purple'});
-        var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', {color: 'orange'});
+        var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', {color: 'orange', fillOpacity: 0});
 
         // إضافة الطبقات إلى الخريطة
         policeLayer.addTo(map);
@@ -63,7 +71,7 @@
                 initial: false,
                 textPlaceholder: 'Search ' + title,
                 moveToLocation: function (latlng, title, map) {
-                    map.setView(latlng, 15); // تكبير الخريطة عند العثور على نتيجة
+                    map.setView(latlng, 18); // تكبير الخريطة إلى مستوى 18 عند العثور على نتيجة
                 }
             });
 
@@ -91,6 +99,23 @@
         map.addControl(pharmacySearch);
         map.addControl(policeSearch);
         map.addControl(civilSearch);
+
+        // إضافة مفتاح الخريطة في أسفل اليمين
+        var legend = L.control({position: 'bottomright'});
+
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'legend');
+            div.innerHTML += '<b>Legend</b><br>';
+            div.innerHTML += '<i style="background: blue;"></i> Police Stations<br>';
+            div.innerHTML += '<i style="background: red;"></i> Civil Defense Centers<br>';
+            div.innerHTML += '<i style="background: green;"></i> Hospitals<br>';
+            div.innerHTML += '<i style="background: purple;"></i> Pharmacies<br>';
+            div.innerHTML += '<i style="background: orange;"></i> Ramallah Zones<br>';
+            return div;
+        };
+
+        legend.addTo(map);
     </script>
 </body>
 </html>
+
