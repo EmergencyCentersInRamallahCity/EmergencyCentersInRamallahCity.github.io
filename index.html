@@ -217,10 +217,10 @@
         }
 
         var hospitalIcon = L.divIcon({
-            html: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hospital" viewBox="0 0 16 16"> <path d="M6 .5v2H4v-2h-.5A1.5 1.5 0 0 0 2 2v12a1.5 1.5 0 0 0 1.5 1.5H4v-2h2v2h4v-2h2v2h.5a1.5 1.5 0 0 0 1.5-1.5V2a1.5 1.5 0 0 0-1.5-1.5H12v2h-2v-2H6Zm0 3v1h1V4H6Zm3 0v1h1V4H9ZM6 6v1h1V6H6Zm3 0v1h1V6H9ZM6 8v1h1V8H6Zm3 0v1h1V8H9ZM6 10v1h1v-1H6Zm3 0v1h1v-1H9ZM6 12v1h1v-1H6Zm3 0v1h1v-1H9Z"/> </svg>',
+            html: '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-hospital" viewBox="0 0 16 16"> <path d="M6 .5v2H4v-2h-.5A1.5 1.5 0 0 0 2 2v12a1.5 1.5 0 0 0 1.5 1.5H4v-2h2v2h4v-2h2v2h.5a1.5 1.5 0 0 0 1.5-1.5V2a1.5 1.5 0 0 0-1.5-1.5H12v2h-2v-2H6Zm0 3v1h1V4H6Zm3 0v1h1V4H9ZM6 6v1h1V6H6Zm3 0v1h1V6H9ZM6 8v1h1V8H6Zm3 0v1h1V8H9ZM6 10v1h1v-1H6Zm3 0v1h1v-1H9ZM6 12v1h1v-1H6Zm3 0v1h1v-1H9Z"/> </svg>',
             className: 'hospital-icon',
-            iconSize: [16, 16],
-            iconAnchor: [8, 8]
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
         });
 
         var hospitalsLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', pointToLayerFunctionFactory('red', hospitalIcon));
