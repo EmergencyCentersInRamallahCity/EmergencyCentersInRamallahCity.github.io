@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-sidebar/src/L.Control.Sidebar.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
     <!-- Custom CSS -->
     <style>
         /* Map container styling */
@@ -19,30 +20,20 @@
             height: 100vh; /* Full viewport height */
         }
 
-        /* Locate user control styling */
-        .leaflet-control-locate {
-            position: absolute;
-            top: 50px; /* Adjust the top position as needed */
-            left: 10px;
-            background-color: #fff;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            z-index: 1000;
+        /* Legend styling */
+        .legend { 
+            background: white; 
+            line-height: 1.5em;
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
         }
 
-        /* North arrow control styling */
-        .leaflet-control-northarrow {
-            position: absolute;
-            top: 90px; /* Adjust the top position as needed */
-            right: 10px;
-            width: 30px;
-            height: 30px;
-            background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/north_arrow.svg');
-            background-size: cover;
-            cursor: pointer;
-            z-index: 1000;
+        /* Search control styling */
+        .leaflet-control-search {
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
         }
 
         /* Scale control styling */
@@ -56,32 +47,17 @@
             border-radius: 5px;
         }
 
-        /* Print tool styling */
-        .leaflet-control-easyPrint {
+        /* North arrow styling */
+        .leaflet-control-northarrow {
             position: absolute;
-            top: 90px; /* Adjust the top position as needed */
-            left: 10px;
-        }
-
-        /* Measure tool styling */
-        .leaflet-control-measure {
-            position: absolute;
-            top: 130px; /* Adjust the top position as needed */
-            left: 10px;
-        }
-
-        /* Draw control styling */
-        .leaflet-draw-toolbar {
-            position: absolute;
-            top: 170px; /* Adjust the top position as needed */
-            left: 10px;
-        }
-
-        /* Search control styling */
-        .leaflet-control-search {
-            position: absolute;
-            top: 210px; /* Adjust the top position as needed */
-            left: 10px;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/north_arrow.svg');
+            background-size: cover;
+            cursor: pointer;
+            z-index: 1000; /* Ensure the arrow is above other controls */
         }
 
         /* Sidebar styling */
@@ -146,24 +122,49 @@
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <h3>Search</h3>
-            <div class="sidebar-toggle" onclick="toggleSidebar()">X</div>
+            <h3>Categories</h3>
+            <p>Mapping Emergency Centers in Ramallah city</p>
         </div>
         <div class="sidebar-content">
-            <input id="search-input" type="text" placeholder="Search...">
-            <button id="search-button" onclick="search()">Search</button>
+            <input type="checkbox" id="toggleHospitals" checked>
+            <label for="toggleHospitals">Hospitals</label><br>
+            <input type="checkbox" id="toggleCivil" checked>
+            <label for="toggleCivil">Civil Defense Centers</label><br>
+            <input type="checkbox" id="togglePharmacies" checked>
+            <label for="togglePharmacies">Pharmacies</label><br>
+            <input type="checkbox" id="togglePolice" checked>
+            <label for="togglePolice">Police Stations</label><br>
+            <input type="checkbox" id="toggleZones" checked>
+            <label for="toggleZones">Ramallah Zones</label><br>
+            <label for="destination">Destination:</label><br>
+            <input type="text" id="destination" placeholder="Enter coordinates (lat, lng)"><br>
         </div>
     </div>
+    
+    <!-- Sidebar toggle button -->
+    <div class="sidebar-toggle" onclick="toggleSidebar()">Toggle Sidebar</div>
+    
+    <!-- Coordinates display -->
+    <div id="coordinates" style="position: absolute; bottom: 10px; left: 10px;"></div>
+    
+    <!-- Locate user control -->
+    <div id="locateUser" class="leaflet-control-locate" title="Locate user"></div>
+
+    <!-- Button to show coordinates -->
+    <button id="showCoordinatesButton" style="position: absolute; bottom: 50px; left: 10px; padding: 5px 10px; cursor: pointer; z-index: 1000;">
+        Click to Show Coordinates
+    </button>
     
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <!-- Leaflet plugins JavaScript -->
     <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
-    <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.min.js"></script>
+    <script src="https://rawgit.com/rowanwins/leaflet-easyPrint/gh-pages/dist/bundle.js"></script>
+    <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script>
     <script src="https://unpkg.com/leaflet-sidebar/src/L.Control.Sidebar.js"></script>
     <script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
     <script src="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
-
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <!-- Custom JavaScript -->
     <script>
         var map = L.map('map').setView([31.95, 35.2], 12);
@@ -171,6 +172,155 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 20
         }).addTo(map);
+
+        function createGeoJsonLayer(url, propertyName, pointToLayerFunction, style) {
+            var layer = L.geoJson(null, {
+                pointToLayer: pointToLayerFunction,
+                style: style,
+                onEachFeature: function (feature, layer) {
+                    var popupContent = '<b>' + (feature.properties[propertyName] || "No name") + '</b>';
+                    if (feature.properties.phone_Number) {
+                        popupContent += '<br>Phone: ' + feature.properties.phone_Number;
+                    }
+                    layer.bindPopup(popupContent);
+                }
+            });
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    layer.addData(data);
+                    if (url === 'RamallahZones.geojson') {
+                        map.fitBounds(layer.getBounds());
+                    }
+                })
+                .catch(error => console.error('Error loading GeoJSON:', error));
+
+            return layer;
+        }
+
+        function pointToLayerFunctionFactory(color) {
+            return function (feature, latlng) {
+                return L.circleMarker(latlng, {
+                    radius: 8,
+                    fillColor: color,
+                    color: color,
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+            };
+        }
+
+        var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', null, {color: 'orange', fillOpacity: 0});
+        var hospitalLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', pointToLayerFunctionFactory('orange'), null);
+        var civilLayer = createGeoJsonLayer('ciivilld.geojson', 'Name', pointToLayerFunctionFactory('yellow'), null);
+        var pharmacyLayer = createGeoJsonLayer('pharmacy.geojson', 'NAME_AR', pointToLayerFunctionFactory('pink'), null);
+        var policeLayer = createGeoJsonLayer('Police.geojson', 'NAME_AR_1', pointToLayerFunctionFactory('black'), null);
+
+        zonesLayer.addTo(map);
+        hospitalLayer.addTo(map);
+        civilLayer.addTo(map);
+        pharmacyLayer.addTo(map);
+        policeLayer.addTo(map);
+
+        var overlayMaps = {
+            "Hospitals": hospitalLayer,
+            "Civil Defense Centers": civilLayer,
+            "Pharmacies": pharmacyLayer,
+            "Police Stations": policeLayer,
+            "Ramallah Zones": zonesLayer
+        };
+
+        L.control.layers(null, overlayMaps).addTo(map);
+
+        var searchControl = new L.Control.Search({
+            layer: L.featureGroup([hospitalLayer, civilLayer, pharmacyLayer, policeLayer]),
+            propertyName: 'NAME_AR',
+            moveToLocation: function(latlng, title, map) {
+                map.setView(latlng, 15);
+            }
+        });
+
+        searchControl.on('search:locationfound', function(e) {
+            e.layer.openPopup();
+        });
+
+        map.addControl(searchControl);
+
+        var legend = L.control({position: 'bottomright'});
+
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'legend');
+            div.innerHTML += '<b>Legend</b><br>';
+            div.innerHTML += '<i style="background: orange;"></i> Hospitals<br>';
+            div.innerHTML += '<i style="background: yellow;"></i> Civil Defense Centers<br>';
+            div.innerHTML += '<i style="background: pink;"></i> Pharmacies<br>';
+            div.innerHTML += '<i style="background: black;"></i> Police Stations<br>';
+            div.innerHTML += '<i style="background: orange;"></i> Ramallah Zones<br>';
+            return div;
+        };
+
+        legend.addTo(map);
+
+        // Adding scale control
+        L.control.scale().addTo(map);
+
+        // Adding print tool
+        var printer = L.easyPrint({
+            title: 'Print map',
+            position: 'topleft',
+            elementsToHide: '.legend, .leaflet-control-search'
+        }).addTo(map);
+
+        // Adding measure tool
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            primaryAreaUnit: 'sqmeters',
+            activeColor: '#FF8300',
+            completedColor: '#FF8300'
+        });
+        measureControl.addTo(map);
+
+        // Adding draw control
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        var drawControl = new L.Control.Draw({
+            position: 'topleft',
+            draw: {
+                polyline: true,
+                polygon: true,
+                circle: false,
+                rectangle: true,
+                marker: true
+            },
+            edit: {
+                featureGroup: drawnItems,
+                remove: true
+            }
+        });
+
+        map.addControl(drawControl);
+
+        map.on(L.Draw.Event.CREATED, function (event) {
+            var layer = event.layer;
+            drawnItems.addLayer(layer);
+        });
+
+        // Toggle sidebar function
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Display coordinates on click
+        var coordinatesDiv = document.getElementById('coordinates');
+
+        map.on('click', function(e) {
+            coordinatesDiv.innerHTML = '<b>Clicked Coordinates:</b><br>Latitude: ' + e.latlng.lat.toFixed(6) + '<br>Longitude: ' + e.latlng.lng.toFixed(6);
+        });
 
         // Adding locate user control
         var locateUserControl = L.control.locate({
@@ -193,9 +343,7 @@
             strings: {
                 title: "Show me where I am",
                 popup: "You are within {distance} {unit} from this point",
-                outsideMapBoundsMsg: "You seem located outside the
-"You are within {distance} {unit} from this point",
-            outsideMapBoundsMsg: "You seem located outside the boundaries of the map"
+                outsideMapBoundsMsg: "You seem located outside the boundaries of the map"
             },
             locateOptions: {
                 maxZoom: 18,
@@ -258,3 +406,4 @@
     </script>
 </body>
 </html>
+
