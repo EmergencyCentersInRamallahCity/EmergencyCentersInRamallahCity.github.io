@@ -6,6 +6,12 @@
     <title>Mapping Emergency Centers in Ramallah city</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet plugins CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-sidebar/src/L.Control.Sidebar.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
     <!-- Custom CSS -->
     <style>
         /* Map container styling */
@@ -78,6 +84,31 @@
             left: 10px;
         }
 
+        /* Sidebar styling */
+        .sidebar {
+            background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            padding: 10px;
+            width: 300px;
+            height: 100%;
+            overflow-y: auto;
+            display: none; /* Initially hide sidebar */
+        }
+
+        .sidebar.active {
+            display: block; /* Show sidebar when active */
+        }
+
+        .sidebar-header {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+
+        .sidebar-content {
+            margin-bottom: 10px;
+        }
+
         /* Sidebar toggle button styling */
         .sidebar-toggle {
             position: absolute;
@@ -85,6 +116,19 @@
             right: 10px;
             background-color: #fff;
             padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* Locate user control styling */
+        .leaflet-control-locate {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #fff;
+            padding: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
             cursor: pointer;
@@ -99,8 +143,26 @@
     <!-- North arrow control -->
     <div class="leaflet-control-northarrow" title="North"></div>
     
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>Search</h3>
+            <div class="sidebar-toggle" onclick="toggleSidebar()">X</div>
+        </div>
+        <div class="sidebar-content">
+            <input id="search-input" type="text" placeholder="Search...">
+            <button id="search-button" onclick="search()">Search</button>
+        </div>
+    </div>
+    
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Leaflet plugins JavaScript -->
+    <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
+    <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.min.js"></script>
+    <script src="https://unpkg.com/leaflet-sidebar/src/L.Control.Sidebar.js"></script>
+    <script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
 
     <!-- Custom JavaScript -->
     <script>
@@ -131,7 +193,9 @@
             strings: {
                 title: "Show me where I am",
                 popup: "You are within {distance} {unit} from this point",
-                outsideMapBoundsMsg: "You seem located outside the boundaries of the map"
+                outsideMapBoundsMsg: "You seem located outside the
+"You are within {distance} {unit} from this point",
+            outsideMapBoundsMsg: "You seem located outside the boundaries of the map"
             },
             locateOptions: {
                 maxZoom: 18,
@@ -142,72 +206,55 @@
             }
         }).addTo(map);
 
-        // Adding scale control
-        L.control.scale().addTo(map);
+        // Trigger locate user function on load
+        map.on('load', function() {
+            locateUserControl.start();
+        });
 
-        // Adding print tool
-        var printer = L.easyPrint({
-            title: 'Print map',
-            position: 'topleft',
-            elementsToHide: '.legend, .leaflet-control-search'
+        map.whenReady(function() {
+            locateUserControl.start();
+        });
+
+        // Adding routing control
+        var routingControl = L.Routing.control({
+            waypoints: [],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim()
         }).addTo(map);
 
-        // Adding measure tool
-        var measureControl = new L.Control.Measure({
-            position: 'topleft',
-            primaryLengthUnit: 'meters',
-            primaryAreaUnit: 'sqmeters',
-            activeColor: '#FF8300',
-            completedColor: '#FF8300'
-        });
-        measureControl.addTo(map);
+        // Adding a button to start routing
+        var routingButton = L.easyButton('fa-location-arrow', function(btn, map){
+            // Use the geolocation API to get the current position
+            map.locate({setView: true, maxZoom: 16});
+            map.on('locationfound', function(e){
+                var currentLocation = e.latlng;
 
-        // Adding draw control
-        var drawnItems = new L.FeatureGroup();
-        map.addLayer(drawnItems);
+                // Open a popup to select the destination
+                L.popup()
+                    .setLatLng(currentLocation)
+                    .setContent('<b>Select your destination</b><br><button onclick="setRoutingDestination()">Set Destination</button>')
+                    .openOn(map);
 
-        var drawControl = new L.Control.Draw({
-            position: 'topleft',
-            draw: {
-                polyline: true,
-                polygon: true,
-                circle: false,
-                rectangle: true,
-                marker: true
-            },
-            edit: {
-                featureGroup: drawnItems,
-                remove: true
-            }
-        });
+                window.setRoutingDestination = function() {
+                    var destination = L.DomUtil.get('destination').value;
+                    L.Routing.control({
+                        waypoints: [
+                            currentLocation,
+                            L.latLng(destination)
+                        ],
+                        routeWhileDragging: true
+                    }).addTo(map);
+                    map.closePopup();
+                }
+            });
+        }, 'Get Directions').addTo(map);
 
-        map.addControl(drawControl);
-
-        // Display coordinates on click
-        map.on('click', function(e) {
-            console.log('Clicked Coordinates:', e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
-        });
-
-        // Toggle sidebar function
-        function toggleSidebar() {
-            var sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-        }
-
-        // Adding a button to show coordinates
-        var showCoordinatesButton = document.createElement('button');
-        showCoordinatesButton.textContent = 'Click to Show Coordinates';
-        showCoordinatesButton.style.position = 'absolute';
-        showCoordinatesButton.style.bottom = '50px';
-        showCoordinatesButton.style.left = '10px';
-        showCoordinatesButton.style.padding = '5px 10px';
-        showCoordinatesButton.style.cursor = 'pointer';
-        showCoordinatesButton.style.zIndex = '1000';
+        // Function to toggle showing coordinates on button click
+        var showCoordinatesButton = document.getElementById('showCoordinatesButton');
         showCoordinatesButton.addEventListener('click', function() {
             var coordinatesDiv = document.getElementById('coordinates');
             coordinatesDiv.style.display = 'block'; // Show coordinates div
         });
-        document.body.appendChild(showCoordinatesButton);
     </script>
 </body>
 </html>
