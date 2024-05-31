@@ -13,42 +13,69 @@
             height: 100vh; /* Full viewport height */
         }
 
-        /* North arrow styling */
+        /* Locate user control styling */
+        .leaflet-control-locate {
+            position: absolute;
+            top: 50px; /* Adjust the top position as needed */
+            left: 10px;
+            background-color: #fff;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* North arrow control styling */
         .leaflet-control-northarrow {
             position: absolute;
-            top: 10px;
+            top: 90px; /* Adjust the top position as needed */
             right: 10px;
             width: 30px;
             height: 30px;
             background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/north_arrow.svg');
             background-size: cover;
             cursor: pointer;
-            z-index: 1000; /* Ensure the arrow is above other controls */
+            z-index: 1000;
         }
 
-        /* Sidebar styling */
-        .sidebar {
-            background: white;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            padding: 10px;
-            width: 300px;
-            height: 100%;
-            overflow-y: auto;
-            display: none; /* Initially hide sidebar */
+        /* Scale control styling */
+        .leaflet-control-scale {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            padding: 5px 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid #777;
+            border-radius: 5px;
         }
 
-        .sidebar.active {
-            display: block; /* Show sidebar when active */
+        /* Print tool styling */
+        .leaflet-control-easyPrint {
+            position: absolute;
+            top: 90px; /* Adjust the top position as needed */
+            left: 10px;
         }
 
-        .sidebar-header {
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
+        /* Measure tool styling */
+        .leaflet-control-measure {
+            position: absolute;
+            top: 130px; /* Adjust the top position as needed */
+            left: 10px;
         }
 
-        .sidebar-content {
-            margin-bottom: 10px;
+        /* Draw control styling */
+        .leaflet-draw-toolbar {
+            position: absolute;
+            top: 170px; /* Adjust the top position as needed */
+            left: 10px;
+        }
+
+        /* Search control styling */
+        .leaflet-control-search {
+            position: absolute;
+            top: 210px; /* Adjust the top position as needed */
+            left: 10px;
         }
 
         /* Sidebar toggle button styling */
@@ -63,19 +90,6 @@
             cursor: pointer;
             z-index: 1000;
         }
-
-        /* Locate user control styling */
-        .leaflet-control-locate {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #fff;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            z-index: 1000;
-        }
     </style>
 </head>
 <body>
@@ -85,33 +99,9 @@
     <!-- North arrow control -->
     <div class="leaflet-control-northarrow" title="North"></div>
     
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h3>Categories</h3>
-            <p>Mapping Emergency Centers in Ramallah city</p>
-        </div>
-        <div class="sidebar-content">
-            <input type="checkbox" id="toggleHospitals" checked>
-            <label for="toggleHospitals">Hospitals</label><br>
-            <input type="checkbox" id="toggleCivil" checked>
-            <label for="toggleCivil">Civil Defense Centers</label><br>
-            <input type="checkbox" id="togglePharmacies" checked>
-            <label for="togglePharmacies">Pharmacies</label><br>
-            <input type="checkbox" id="togglePolice" checked>
-            <label for="togglePolice">Police Stations</label><br>
-            <input type="checkbox" id="toggleZones" checked>
-            <label for="toggleZones">Ramallah Zones</label><br>
-            <label for="destination">Destination:</label><br>
-            <input type="text" id="destination" placeholder="Enter coordinates (lat, lng)"><br>
-        </div>
-    </div>
-    
-    <!-- Sidebar toggle button -->
-    <div class="sidebar-toggle" onclick="toggleSidebar()">Toggle Sidebar</div>
-    
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <!-- Custom JavaScript -->
     <script>
         var map = L.map('map').setView([31.95, 35.2], 12);
@@ -120,14 +110,104 @@
             maxZoom: 20
         }).addTo(map);
 
+        // Adding locate user control
+        var locateUserControl = L.control.locate({
+            position: 'topleft',
+            drawCircle: true,
+            follow: true,
+            setView: 'untilPan',
+            keepCurrentZoomLevel: true,
+            markerStyle: {
+                weight: 1,
+                opacity: 0.8,
+                fillOpacity: 0.8
+            },
+            circleStyle: {
+                weight: 1,
+                clickable: false
+            },
+            icon: 'fa fa-location-arrow',
+            metric: true,
+            strings: {
+                title: "Show me where I am",
+                popup: "You are within {distance} {unit} from this point",
+                outsideMapBoundsMsg: "You seem located outside the boundaries of the map"
+            },
+            locateOptions: {
+                maxZoom: 18,
+                watch: true,
+                enableHighAccuracy: true,
+                maximumAge: 10000,
+                timeout: 10000
+            }
+        }).addTo(map);
+
+        // Adding scale control
+        L.control.scale().addTo(map);
+
+        // Adding print tool
+        var printer = L.easyPrint({
+            title: 'Print map',
+            position: 'topleft',
+            elementsToHide: '.legend, .leaflet-control-search'
+        }).addTo(map);
+
+        // Adding measure tool
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            primaryAreaUnit: 'sqmeters',
+            activeColor: '#FF8300',
+            completedColor: '#FF8300'
+        });
+        measureControl.addTo(map);
+
+        // Adding draw control
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        var drawControl = new L.Control.Draw({
+            position: 'topleft',
+            draw: {
+                polyline: true,
+                polygon: true,
+                circle: false,
+                rectangle: true,
+                marker: true
+            },
+            edit: {
+                featureGroup: drawnItems,
+                remove: true
+            }
+        });
+
+        map.addControl(drawControl);
+
+        // Display coordinates on click
+        map.on('click', function(e) {
+            console.log('Clicked Coordinates:', e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
+        });
+
         // Toggle sidebar function
         function toggleSidebar() {
             var sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('active');
         }
 
-        // North arrow control
-        L.control.northArrow().addTo(map);
+        // Adding a button to show coordinates
+        var showCoordinatesButton = document.createElement('button');
+        showCoordinatesButton.textContent = 'Click to Show Coordinates';
+        showCoordinatesButton.style.position = 'absolute';
+        showCoordinatesButton.style.bottom = '50px';
+        showCoordinatesButton.style.left = '10px';
+        showCoordinatesButton.style.padding = '5px 10px';
+        showCoordinatesButton.style.cursor = 'pointer';
+        showCoordinatesButton.style.zIndex = '1000';
+        showCoordinatesButton.addEventListener('click', function() {
+            var coordinatesDiv = document.getElementById('coordinates');
+            coordinatesDiv.style.display = 'block'; // Show coordinates div
+        });
+        document.body.appendChild(showCoordinatesButton);
     </script>
 </body>
 </html>
