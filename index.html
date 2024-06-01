@@ -12,7 +12,7 @@
 <body>
     <div id="map"></div>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-ajax"></script>
+    <script src="https://unpkg.com/leaflet-ajax@2.1.0/dist/leaflet.ajax.min.js"></script>
     <script>
         var map = L.map('map').setView([31.9024, 35.1957], 13); // مركز رام الله
 
@@ -21,10 +21,30 @@
         }).addTo(map);
 
         // تحميل وعرض ملفات GeoJSON
-        var hospitalLayer = new L.GeoJSON.AJAX("hospital.geojson");
-        var pharmacyLayer = new L.GeoJSON.AJAX("pharmacy.geojson");
-        var civilLayer = new L.GeoJSON.AJAX("ciivilld.geojson");
-        var policeLayer = new L.GeoJSON.AJAX("Police.geojson");
+        var hospitalLayer = new L.GeoJSON.AJAX("hospital.geojson", {
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup("مستشفى: " + feature.properties.NAME_AR);
+            }
+        });
+
+        var pharmacyLayer = new L.GeoJSON.AJAX("pharmacy.geojson", {
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup("صيدلية: " + feature.properties.NAME_AR);
+            }
+        });
+
+        var civilLayer = new L.GeoJSON.AJAX("ciivilld.geojson", {
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup("دفاع مدني: " + feature.properties.Name);
+            }
+        });
+
+        var policeLayer = new L.GeoJSON.AJAX("Police.geojson", {
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup("شرطة: " + feature.properties.NAME_AR_1);
+            }
+        });
+
         var ramallahZonesLayer = new L.GeoJSON.AJAX("RamallahZones.geojson");
 
         hospitalLayer.addTo(map);
