@@ -23,36 +23,53 @@
         // تحميل وعرض ملفات GeoJSON
         var hospitalLayer = new L.GeoJSON.AJAX("hospital.geojson");
         var pharmacyLayer = new L.GeoJSON.AJAX("pharmacy.geojson");
-        var ciivillLayer = new L.GeoJSON.AJAX("civil.geojson");
+        var civilLayer = new L.GeoJSON.AJAX("ciivilld.geojson");
         var policeLayer = new L.GeoJSON.AJAX("Police.geojson");
-        var RamallahZonesLayer = new L.GeoJSON.AJAX("RamallahZones.geojson");
+        var ramallahZonesLayer = new L.GeoJSON.AJAX("RamallahZones.geojson");
 
         hospitalLayer.addTo(map);
         pharmacyLayer.addTo(map);
-        ciivillLayer.addTo(map);
+        civilLayer.addTo(map);
         policeLayer.addTo(map);
-        RamallahZonesLayer.addTo(map);
+        ramallahZonesLayer.addTo(map);
 
         // وظيفة للتحقق من إذا كانت المنطقة تحتوي على مراكز طوارئ
         function zoneNeedsReinforcement(zone) {
             var hasEmergencyCenter = false;
-            map.eachLayer(function (layer) {
-                if (layer instanceof L.GeoJSON && layer.getLayers().length > 0) {
-                    layer.eachLayer(function (featureLayer) {
-                        if (zone.getBounds().contains(featureLayer.getLatLng())) {
-                            hasEmergencyCenter = true;
-                        }
-                    });
-                }
-            });
+            var emergencyCenters = [hospitalLayer, pharmacyLayer, civilLayer, policeLayer];
+
+            for (var i = 0; i < emergencyCenters.length; i++) {
+                emergencyCenters[i].eachLayer(function (featureLayer) {
+                    if (zone.getBounds().contains(featureLayer.getLatLng())) {
+                        hasEmergencyCenter = true;
+                    }
+                });
+            }
+
             return !hasEmergencyCenter;
         }
 
-        // تلوين المناطق التي تحتاج إلى تعزيز
-        RamallahZonesLayer.on('data:loaded', function() {
-            RamallahZonesLayer.eachLayer(function(layer) {
+        // وظيفة لاختيار موقع جديد لمركز الطوارئ
+        function findSuitableLocation(zone) {
+            var center = zone.getBounds().getCenter();
+            var suitableLocationMarker = L.marker(center, {
+                icon: L.icon({
+                    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).addTo(map);
+            suitableLocationMarker.bindPopup("موقع مقترح لمركز طوارئ جديد").openPopup();
+        }
+
+        // تلوين المناطق التي تحتاج إلى تعزيز وتحديد مواقع جديدة
+        ramallahZonesLayer.on('data:loaded', function() {
+            ramallahZonesLayer.eachLayer(function(layer) {
                 if (zoneNeedsReinforcement(layer)) {
                     layer.setStyle({color: 'red'});
+                    findSuitableLocation(layer);
                 } else {
                     layer.setStyle({color: 'green'});
                 }
@@ -61,5 +78,3 @@
     </script>
 </body>
 </html>
-
-
