@@ -45,7 +45,12 @@
             }
         });
 
-        var ramallahZonesLayer = new L.GeoJSON.AJAX("RamallahZones.geojson");
+        var ramallahZonesLayer = new L.GeoJSON.AJAX("RamallahZones.geojson", {
+            onEachFeature: function (feature, layer) {
+                var zoneName = feature.properties.NAME;
+                layer.bindPopup("المنطقة: " + zoneName);
+            }
+        });
 
         hospitalLayer.addTo(map);
         pharmacyLayer.addTo(map);
@@ -99,3 +104,4 @@
     </script>
 </body>
 </html>
+
