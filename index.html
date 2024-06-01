@@ -18,6 +18,10 @@
             padding: 20px;
             display: flex;
             align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
             
         }
         .header img {
@@ -27,6 +31,9 @@
          .header h1 {
             margin: 0;
         }
+        .content {
+            padding-top: 120px; /* إضافة مساحة كافية أعلى المحتوى لتجنب التداخل مع الهيدر الثابت */
+        }
     </style>
 </head>
 <body>
@@ -34,7 +41,11 @@
         <img src="https://www.marefa.org/w/images/thumb/1/16/Birzeit_University_logo.svg/600px-Birzeit_University_logo.svg.png" alt="Birzeit University Logo">
         <h1>Emergency Centers in Ramallah</h1>
     </div>
-    <div id="map"></div>
+    <div class="content">
+        <div id="map"></div>
+        <p>Content goes here...</p>
+    </div>
+   
      
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-ajax@2.1.0/dist/leaflet.ajax.min.js"></script>
