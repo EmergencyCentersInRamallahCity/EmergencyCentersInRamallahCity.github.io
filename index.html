@@ -32,7 +32,7 @@
             margin: 0;
         }
         .content {
-            padding-top: 120px; /* إضافة مساحة كافية أعلى المحتوى لتجنب التداخل مع الهيدر الثابت */
+            padding-top: 30px; /* إضافة مساحة كافية أعلى المحتوى لتجنب التداخل مع الهيدر الثابت */
         }
     </style>
 </head>
@@ -43,14 +43,10 @@
     </div>
     <div class="content">
         <div id="map"></div>
-        <p>Content goes here...</p>
-    </div>
-   
-     
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-ajax@2.1.0/dist/leaflet.ajax.min.js"></script>
-    <script src="https://unpkg.com/leaflet-legend/L.Control.Legend.js"></script>
-    <script>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet-ajax@2.1.0/dist/leaflet.ajax.min.js"></script>
+        <script src="https://unpkg.com/leaflet-legend/L.Control.Legend.js"></script>
+        <script>
         var map = L.map('map').setView([31.9024, 35.1957], 13); // مركز رام الله
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -148,5 +144,6 @@
         legend.setContent('<h4>تعزيز المراكز</h4><i style="background: red"></i> بحاجة إلى تعزيز<br><i style="background: green"></i> لا تحتاج إلى تعزيز');
 
     </script>
+</div>
 </body>
 </html>
