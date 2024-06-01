@@ -60,18 +60,18 @@
 
         // وظيفة للتحقق من إذا كانت المنطقة تحتوي على مراكز طوارئ
         function zoneNeedsReinforcement(zone) {
-            var hasEmergencyCenter = false;
+            var emergencyCenterCount = 0;
             var emergencyCenters = [hospitalLayer, pharmacyLayer, civilLayer, policeLayer];
 
             for (var i = 0; i < emergencyCenters.length; i++) {
                 emergencyCenters[i].eachLayer(function (featureLayer) {
                     if (zone.getBounds().contains(featureLayer.getLatLng())) {
-                        hasEmergencyCenter = true;
+                        emergencyCenterCount++;
                     }
                 });
             }
 
-            return !hasEmergencyCenter;
+            return emergencyCenterCount <= 2;
         }
 
         // وظيفة لاختيار موقع جديد لمركز الطوارئ
@@ -104,3 +104,4 @@
     </script>
 </body>
 </html>
+
