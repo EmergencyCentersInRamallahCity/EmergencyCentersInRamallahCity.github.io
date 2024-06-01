@@ -1,2 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emergency Centers in Ramallah</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map { height: 600px; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-ajax"></script>
+    <script>
+        var map = L.map('map').setView([31.9024, 35.1957], 13); // مركز رام الله
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+
+        // تحميل وعرض ملفات GeoJSON
+        var hospitalLayer = new L.GeoJSON.AJAX("hospital.geojson");
+        var pharmacyLayer = new L.GeoJSON.AJAX("pharmacy.geojson");
+        var ciivillLayer = new L.GeoJSON.AJAX("civil.geojson");
+        var policeLayer = new L.GeoJSON.AJAX("Police.geojson");
+        var RamallahZonesLayer = new L.GeoJSON.AJAX("RamallahZones.geojson");
+
+        hospitalLayer.addTo(map);
+        pharmacyLayer.addTo(map);
+        ciivillLayer.addTo(map);
+        policeLayer.addTo(map);
+        RamallahZonesLayer.addTo(map);
+
+        // وظيفة للتحقق من إذا كانت المنطقة تحتوي على مراكز طوارئ
+        function zoneNeedsReinforcement(zone) {
+            var hasEmergencyCenter = false;
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.GeoJSON && layer.getLayers().length > 0) {
+                    layer.eachLayer(function (featureLayer) {
+                        if (zone.getBounds().contains(featureLayer.getLatLng())) {
+                            hasEmergencyCenter = true;
+                        }
+                    });
+                }
+            });
+            return !hasEmergencyCenter;
+        }
+
+        // تلوين المناطق التي تحتاج إلى تعزيز
+        RamallahZonesLayer.on('data:loaded', function() {
+            RamallahZonesLayer.eachLayer(function(layer) {
+                if (zoneNeedsReinforcement(layer)) {
+                    layer.setStyle({color: 'red'});
+                } else {
+                    layer.setStyle({color: 'green'});
+                }
+            });
+        });
+    </script>
+</body>
+</html>
 
 
