@@ -13,8 +13,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-    <!--    for Icons -->
-    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
     <!-- Custom CSS -->
     <style>
         /* Map container styling */
@@ -231,7 +229,8 @@
         function createCustomIcon(type) {
             const color = typeColors[type.toLowerCase()]; // Convert type to lowercase for consistency
             const icon = typeIcon[type.toLowerCase()]; 
-            const iconHtml = `<img src="${icon}" style="border-radius:50%;background-color:${color}">`;
+            // const iconHtml = `<img src="${icon}" style="border-radius:50%;background-color:${color}">`;
+            const iconHtml = `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%;"></div>`;
             
             return L.divIcon({
                 className: 'custom-marker',
