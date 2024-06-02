@@ -225,6 +225,18 @@
             police: 'black'
         };
 
+        var legend = L.control({ position: 'bottomright' });
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'legend');
+            div.innerHTML += '<div><span style="background-color: orange; width: 20px; height: 20px; display: inline-block;"></span>Hospitals</div>';
+            div.innerHTML += '<div><span style="background-color: yellow; width: 20px; height: 20px; display: inline-block;"></span>Civil Defense Centers</div>';
+            div.innerHTML += '<div><span style="background-color: brown; width: 20px; height: 20px; display: inline-block;"></span>Pharmacies</div>';
+            div.innerHTML += '<div><span style="background-color: black; width: 20px; height: 20px; display: inline-block;"></span>Police Stations</div>';
+            div.innerHTML += '<div><span style="background-color: black; width: 20px; height: 20px; display: inline-block; opacity: 0.5;"></span>Ramallah Zones</div>';
+            return div;
+        };
+        legend.addTo(map);
+
         // Create custom marker icons
         function createCustomIcon(type) {
             const color = typeColors[type.toLowerCase()]; // Convert type to lowercase for consistency
