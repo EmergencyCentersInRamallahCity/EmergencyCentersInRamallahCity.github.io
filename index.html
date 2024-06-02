@@ -248,21 +248,6 @@
 
         map.addControl(searchControl);
 
-        var legend = L.control({position: 'bottomright'});
-
-        legend.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'legend');
-            div.innerHTML += '<b>Legend</b><br>';
-            div.innerHTML += '<i style="background: orange;"></i> Hospitals<br>';
-            div.innerHTML += '<i style="background: yellow;"></i> Civil Defense Centers<br>';
-            div.innerHTML += '<i style="background: brown;"></i> Pharmacies<br>';
-            div.innerHTML += '<i style="background: black;"></i> Police Stations<br>';
-            div.innerHTML += '<i style="background: black;"></i> Ramallah Zones<br>';
-            return div;
-        };
-
-        legend.addTo(map);
-
         // Adding scale control
         L.control.scale().addTo(map);
 
