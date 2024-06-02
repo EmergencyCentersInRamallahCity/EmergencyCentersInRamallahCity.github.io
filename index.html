@@ -222,14 +222,13 @@
             hospital: 'orange',
             ciivilld: 'yellow',
             pharmacy: 'brown',
-            Police: 'black'
+            police: 'black'
         };
 
         // Create custom marker icons
         function createCustomIcon(type) {
             const color = typeColors[type.toLowerCase()]; // Convert type to lowercase for consistency
-            const iconHtml = `<div><img src="icons/${type}.svg" style="background-color:${color}"></div>`;
-            // const iconHtml = `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%;"></div>`;
+            const iconHtml = `<div style="background-color: ${color}; padding: 3px; border-radius: 50%; width: 24px; height: 24px;"><img src="icons/${type}.svg" style="padding: 3px;"></div>`;
             
             return L.divIcon({
                 className: 'custom-marker',
