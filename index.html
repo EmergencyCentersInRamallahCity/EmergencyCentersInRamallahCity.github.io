@@ -263,7 +263,7 @@
         var hospitalLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', pointToLayerFunctionFactory('hospital'), null);
         var civilLayer = createGeoJsonLayer('ciivilld.geojson', 'Name', pointToLayerFunctionFactory('ciivilld'), null);
         var pharmacyLayer = createGeoJsonLayer('pharmacy.geojson', 'NAME_AR', pointToLayerFunctionFactory('pharmacy'), null);
-        var policeLayer = createGeoJsonLayer('Police.geojson', 'NAME_AR_1', pointToLayerFunctionFactory('police'), null);
+        var policeLayer = createGeoJsonLayer('police.geojson', 'NAME_AR_1', pointToLayerFunctionFactory('police'), null);
 
         zonesLayer.addTo(map);
         hospitalLayer.addTo(map);
@@ -275,7 +275,7 @@
             "Hospitals": hospitalLayer,
             "Civil Defense Centers": civilLayer,
             "Pharmacies": pharmacyLayer,
-            "Police Stations": policeLayer,
+            "police Stations": policeLayer,
             "Ramallah Zones": zonesLayer
         };
 
