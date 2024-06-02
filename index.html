@@ -231,6 +231,17 @@
             "Police Stations": policeLayer,
             "Ramallah Zones": zonesLayer
         };
+        .leaflet-control-layers {
+            position: absolute;
+            top: 50px; /* تحديد المسافة من الأعلى */
+            right: 10px; /* تحديد المسافة من اليمين */
+            bottom: auto; /* إلغاء تحديد المسافة من الأسفل */
+            left: auto; /* إلغاء تحديد المسافة من اليسار */
+            z-index: 1000; /* تحديد ترتيب الطبقة */
+            background-color: rgba(255, 255, 255, 0.8); /* لون خلفية الطبقة */
+            padding: 5px; /* المسافة بين الحواف والمحتوى */
+            border-radius: 4px; /* شكل زوايا الطبقة */
+        }
 
         L.control.layers(null, overlayMaps).addTo(map);
 
