@@ -224,11 +224,19 @@
             pharmacy: 'brown',
             Police: 'black'
         };
+        // Define a type-to-color mapping
+        const typeIcon = {
+            hospital: 'fa fa-h-square',
+            ciivilld: 'fa fa-building',
+            pharmacy: 'fas fa-pills',
+            police: 'fa fa-cab'
+        };
 
         // Create custom marker icons
         function createCustomIcon(type) {
             const color = typeColors[type.toLowerCase()]; // Convert type to lowercase for consistency
-            const iconHtml = `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%;"></div>`;
+            const icon = typeIcon[type.toLowerCase()]; 
+            const iconHtml = `<i class="${icon}" style="font-size:24px;color:${color}"></i>`;
             
             return L.divIcon({
                 className: 'custom-marker',
