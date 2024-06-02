@@ -22,16 +22,6 @@
             height: 100vh; /* Full viewport height */
         }
 
-        /* Legend styling */
-        .legend { 
-            background: white; 
-            line-height: 1.5em;
-            padding: 6px 8px;
-            font: 14px/16px Arial, Helvetica, sans-serif;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            border-radius: 5px;
-        }
-
         /* Search control styling */
         .leaflet-control-search {
             border-radius: 5px;
@@ -47,57 +37,6 @@
             background-color: rgba(255, 255, 255, 0.8);
             border: 2px solid #777;
             border-radius: 5px;
-        }
-
-        /* North arrow styling */
-        .leaflet-control-northarrow {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 30px;
-            height: 30px;
-            background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/north_arrow.svg');
-            background-size: cover;
-            cursor: pointer;
-            z-index: 1000; /* Ensure the arrow is above other controls */
-        }
-
-        /* Sidebar styling */
-        .sidebar {
-            background: white;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            padding: 10px;
-            width: 300px;
-            height: 100%;
-            overflow-y: auto;
-            display: none; /* Initially hide sidebar */
-        }
-
-        .sidebar.active {
-            display: block; /* Show sidebar when active */
-        }
-
-        .sidebar-header {
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-        }
-
-        .sidebar-content {
-            margin-bottom: 10px;
-        }
-
-        /* Sidebar toggle button styling */
-        .sidebar-toggle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #fff;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            z-index: 1000;
         }
 
         /* Locate user control styling */
@@ -301,58 +240,6 @@
         }).addTo(map);
 
         L.control.scale().addTo(map);
-
-        var sidebarToggle = L.DomUtil.create('div', 'sidebar-toggle');
-        sidebarToggle.innerHTML = '<i class="fa fa-bars"></i>';
-        L.DomEvent.on(sidebarToggle, 'click', function () {
-            var sidebar = L.DomUtil.get('sidebar');
-            if (L.DomUtil.hasClass(sidebar, 'active')) {
-                L.DomUtil.removeClass(sidebar, 'active');
-            } else {
-                L.DomUtil.addClass(sidebar, 'active');
-            }
-        });
-        map.getContainer().appendChild(sidebarToggle);
-
-        L.DomEvent.on(L.DomUtil.get('toggleHospitals'), 'change', function () {
-            if (this.checked) {
-                map.addLayer(hospitalLayer);
-            } else {
-                map.removeLayer(hospitalLayer);
-            }
-        });
-
-        L.DomEvent.on(L.DomUtil.get('toggleCivil'), 'change', function () {
-            if (this.checked) {
-                map.addLayer(civilLayer);
-            } else {
-                map.removeLayer(civilLayer);
-            }
-        });
-
-        L.DomEvent.on(L.DomUtil.get('togglePharmacies'), 'change', function () {
-            if (this.checked) {
-                map.addLayer(pharmacyLayer);
-            } else {
-                map.removeLayer(pharmacyLayer);
-            }
-        });
-
-        L.DomEvent.on(L.DomUtil.get('togglePolice'), 'change', function () {
-            if (this.checked) {
-                map.addLayer(policeLayer);
-            } else {
-                map.removeLayer(policeLayer);
-            }
-        });
-
-        L.DomEvent.on(L.DomUtil.get('toggleZones'), 'change', function () {
-            if (this.checked) {
-                map.addLayer(zonesLayer);
-            } else {
-                map.removeLayer(zonesLayer);
-            }
-        });
 
         var routingControl = null;
         L.DomEvent.on(L.DomUtil.get('destination'), 'change', function () {
