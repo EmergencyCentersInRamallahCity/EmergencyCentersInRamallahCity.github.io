@@ -13,11 +13,22 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
     <!-- Custom CSS -->
     <style>
         /* Map container styling */
         #map { 
             height: 100vh; /* Full viewport height */
+        }
+
+        /* Legend styling */
+        .legend { 
+            background: white; 
+            line-height: 1.5em;
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
         }
 
         /* Search control styling */
@@ -35,6 +46,19 @@
             background-color: rgba(255, 255, 255, 0.8);
             border: 2px solid #777;
             border-radius: 5px;
+        }
+
+        /* North arrow styling */
+        .leaflet-control-northarrow {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/north_arrow.svg');
+            background-size: cover;
+            cursor: pointer;
+            z-index: 1000; /* Ensure the arrow is above other controls */
         }
 
         /* Sidebar styling */
@@ -92,7 +116,7 @@
             font-family: Arial, sans-serif;
         }
         .header {
-            background-color: #a6ad5f; /* لون زيتي */
+            background-color: #007BFF; /* لون أزرق */
             color: white;
             padding:40px;
             display: flex;
@@ -113,28 +137,6 @@
         .content {
             padding-top: 120px; /* إضافة مساحة كافية أعلى المحتوى لتجنب التداخل مع الهيدر الثابت */
         }
-        /* Legend styling */
-        .legend {
-            background-color: white;
-            padding: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            border-radius: 5px;
-        }
-
-        .legend div {
-            margin-bottom: 5px;
-        }
-
-        .legend span {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            margin-right: 5px;
-        }
-        div.leaflet-bottom.leaflet-right > div.legend.leaflet-control {
-            margin-bottom: 110px;
-        }
-    </style>
     </style>
     
 </head>
@@ -187,27 +189,54 @@
     <script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
     <script src="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
     <!-- Custom JavaScript -->
     <script>
         var map = L.map('map').setView([31.95, 35.2], 12);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 20
-        }).addTo(map);
+        var baseMaps = {
+            "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19
+            }),
+            "OpenTopoMap": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                maxZoom: 17,
+                attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            }),
+            "Stamen Watercolor": L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg', {
+                attribution: 'Map tiles by <a href="https://stamen.com">Stamen Design</a>, under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>. Data by <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY SA</a>.'
+            }),
+            "CartoDB Positron": L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            }),
+            "Esri WorldImagery": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            }),
+            "Stamen Toner": L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
+                attribution: 'Map tiles by <a href="https://stamen.com">Stamen Design</a>, under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>. Data by <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY SA</a>.'
+            }),
+            "Thunderforest Landscape": L.tileLayer('https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=YOUR_API_KEY', {
+                attribution: 'Maps &copy; Thunderforest, Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }),
+            "Esri WorldStreetMap": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{x}/{y}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+            })
+        };
 
+        baseMaps["OpenStreetMap"].addTo(map);
+       
         function createGeoJsonLayer(url, propertyName, pointToLayerFunction, style) {
             var layer = L.geoJson(null, {
                 pointToLayer: pointToLayerFunction,
                 style: style,
                 onEachFeature: function (feature, layer) {
                     var popupContent = '<b>' + (feature.properties[propertyName] || "No name") + '</b>';
-                    if (feature.properties.phone_Number) {
-                        popupContent += '<br>Phone: ' + feature.properties.phone_Number;
+                    if (feature.properties.number_pho) {
+                        popupContent += '<br>Phone: ' + feature.properties.number_pho;
                     }
                     layer.bindPopup(popupContent);
                 }
             });
-
+           
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -220,53 +249,25 @@
 
             return layer;
         }
-        // Define a type-to-color mapping
-        const typeColors = {
-            hospital: 'orange',
-            ciivilld: 'yellow',
-            pharmacy: 'brown',
-            police: 'black'
-        };
 
-        var legend = L.control({ position: 'bottomright' });
-        legend.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'legend');
-            div.innerHTML += '<div><span style="background-color: orange; width: 20px; height: 20px; display: inline-block;"><img src="icons/hospital.svg" style="padding: 3px;"></span>Hospitals</div>';
-            div.innerHTML += '<div><span style="background-color: yellow; width: 20px; height: 20px; display: inline-block;"><img src="icons/ciivilld.svg" style="padding: 3px;"></span>Civil Defense Centers</div>';
-            div.innerHTML += '<div><span style="background-color: brown; width: 20px; height: 20px; display: inline-block;"><img src="icons/pharmacy.svg" style="padding: 3px;"></span>Pharmacies</div>';
-            div.innerHTML += '<div><span style="background-color: black; width: 20px; height: 20px; display: inline-block;"><img src="icons/police.svg" style="padding: 3px;"></span>Police Stations</div>';
-            div.innerHTML += '<div><span style="background-color: black; width: 20px; height: 3px; display: inline-block;"></span>Ramallah Zones</div>';
-            return div;
-        };
-        legend.addTo(map);
-
-        // Create custom marker icons
-        function createCustomIcon(type) {
-            const color = typeColors[type.toLowerCase()]; // Convert type to lowercase for consistency
-            const iconHtml = `<div style="background-color: ${color}; padding: 3px; border-radius: 50%; width: 24px; height: 24px;"><img src="icons/${type}.svg" style="padding: 3px;"></div>`;
-            
-            return L.divIcon({
-                className: 'custom-marker',
-                html: iconHtml,
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
-            });
-        }
-
-        // Modify the pointToLayerFunctionFactory
-        function pointToLayerFunctionFactory(type) {
+        function pointToLayerFunctionFactory(color) {
             return function (feature, latlng) {
-                return L.marker(latlng, {
-                    icon: createCustomIcon(type)
+                return L.circleMarker(latlng, {
+                    radius: 8,
+                    fillColor: color,
+                    color: color,
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8
                 });
             };
         }
 
-        var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', null, {color: 'black', fillOpacity: 0});
-        var hospitalLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', pointToLayerFunctionFactory('hospital'), null);
-        var civilLayer = createGeoJsonLayer('ciivilld.geojson', 'NAME_AR', pointToLayerFunctionFactory('ciivilld'), null);
-        var pharmacyLayer = createGeoJsonLayer('pharmacy.geojson', 'NAME_AR', pointToLayerFunctionFactory('pharmacy'), null);
-        var policeLayer = createGeoJsonLayer('police.geojson', 'NAME_AR', pointToLayerFunctionFactory('police'), null);
+        var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', null, {color: 'orange', fillOpacity: 0});
+        var hospitalLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', pointToLayerFunctionFactory('red'), null);
+        var civilLayer = createGeoJsonLayer('ciivilld.geojson', 'Name', pointToLayerFunctionFactory('yellow'), null);
+        var pharmacyLayer = createGeoJsonLayer('pharmacy.geojson', 'NAME_AR', pointToLayerFunctionFactory('green'), null);
+        var policeLayer = createGeoJsonLayer('Police.geojson', 'NAME_AR_1', pointToLayerFunctionFactory('blue'), null);
 
         zonesLayer.addTo(map);
         hospitalLayer.addTo(map);
@@ -278,11 +279,11 @@
             "Hospitals": hospitalLayer,
             "Civil Defense Centers": civilLayer,
             "Pharmacies": pharmacyLayer,
-            "police Stations": policeLayer,
+            "Police Stations": policeLayer,
             "Ramallah Zones": zonesLayer
         };
 
-        L.control.layers(null, overlayMaps).addTo(map);
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
 
         var searchControl = new L.Control.Search({
             layer: L.featureGroup([hospitalLayer, civilLayer, pharmacyLayer, policeLayer]),
@@ -294,9 +295,42 @@
 
         searchControl.on('search:locationfound', function(e) {
             e.layer.openPopup();
+            if (map.routingControl) {
+                map.removeControl(map.routingControl);
+            }
+            map.routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(31.95, 35.2),  // Starting point, you can customize this
+                    e.latlng
+                ],
+                routeWhileDragging: true
+            }).addTo(map);
         });
 
         map.addControl(searchControl);
+
+       var legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'legend');
+    div.innerHTML += '<b>Legend</b><br>';
+    div.innerHTML += '<i style="background: red; width: 18px; height: 18px; display: inline-block;"></i> Hospitals<br>';
+    div.innerHTML += '<i style="background: yellow; width: 18px; height: 18px; display: inline-block;"></i> Civil Defense Centers<br>';
+    div.innerHTML += '<i style="background: green; width: 18px; height: 18px; display: inline-block;"></i> Pharmacies<br>';
+    div.innerHTML += '<i style="background: blue; width: 18px; height: 18px; display: inline-block;"></i> Police Stations<br>';
+    div.innerHTML += '<i style="background: orange; width: 18px; height: 18px; display: inline-block;"></i> Ramallah Zones<br>';
+    return div;
+};
+
+legend.addTo(map);
+       
+         L.control.fullscreen({
+            position: 'topleft',
+            title: 'Full Screen',
+            titleCancel: 'Exit Full Screen',
+            forceSeparateButton: true
+        }).addTo(map);
+
 
         // Adding scale control
         L.control.scale().addTo(map);
@@ -346,7 +380,7 @@
 
         // Adding locate user control
         var locateUserControl = L.control.locate({
-            position: 'topright',
+            position: 'topleft',
             drawCircle: true,
             follow: true,
             setView: 'untilPan',
@@ -418,31 +452,12 @@
                 }
             });
         }, 'Get Directions').addTo(map);
-
+       
         // Function to toggle showing coordinates on button click
         var showCoordinatesButton = document.getElementById('showCoordinatesButton');
         showCoordinatesButton.addEventListener('click', function() {
             var coordinatesDiv = document.getElementById('coordinates');
             coordinatesDiv.style.display = 'block'; // Show coordinates div
-        });
-       // Adding a legend
-        var legend = L.control({position: 'bottomright'});
-
-        legend.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'legend');
-            div.innerHTML += '<div><span style="background-color: orange"></span> Hospitals</div>';
-            div.innerHTML += '<div><span style="background-color: yellow"></span> Civil Defense Centers</div>';
-            div.innerHTML += '<div><span style="background-color: brown"></span> Pharmacies</div>';
-            div.innerHTML += '<div><span style="background-color: black"></span> Police Stations</div>';
-            div.innerHTML += '<div><span style="background-color: black"></span> Ramallah Zones</div>';
-            return div;
-        };
-
-        legend.addTo(map);
-
-        // Coordinates display
-        map.on('mousemove', function (e) {
-            document.getElementById('coordinates').innerHTML = e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5);
         });
     </script>
 </div>
