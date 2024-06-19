@@ -228,40 +228,6 @@
             police: 'black'
         };
 
-        var legend = L.control({ position: 'bottomright' });
-        legend.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'legend');
-            div.innerHTML += '<div><span style="background-color: orange; width: 20px; height: 20px; display: inline-block;"><img src="icons/hospital.svg" style="padding: 3px;"></span>Hospitals</div>';
-            div.innerHTML += '<div><span style="background-color: yellow; width: 20px; height: 20px; display: inline-block;"><img src="icons/ciivilld.svg" style="padding: 3px;"></span>Civil Defense Centers</div>';
-            div.innerHTML += '<div><span style="background-color: brown; width: 20px; height: 20px; display: inline-block;"><img src="icons/pharmacy.svg" style="padding: 3px;"></span>Pharmacies</div>';
-            div.innerHTML += '<div><span style="background-color: black; width: 20px; height: 20px; display: inline-block;"><img src="icons/police.svg" style="padding: 3px;"></span>Police Stations</div>';
-            div.innerHTML += '<div><span style="background-color: black; width: 20px; height: 3px; display: inline-block;"></span>Ramallah Zones</div>';
-            return div;
-        };
-        legend.addTo(map);
-
-        // Create custom marker icons
-        function createCustomIcon(type) {
-            const color = typeColors[type.toLowerCase()]; // Convert type to lowercase for consistency
-            const iconHtml = `<div style="background-color: ${color}; padding: 3px; border-radius: 50%; width: 24px; height: 24px;"><img src="icons/${type}.svg" style="padding: 3px;"></div>`;
-            
-            return L.divIcon({
-                className: 'custom-marker',
-                html: iconHtml,
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
-            });
-        }
-
-        // Modify the pointToLayerFunctionFactory
-        function pointToLayerFunctionFactory(type) {
-            return function (feature, latlng) {
-                return L.marker(latlng, {
-                    icon: createCustomIcon(type)
-                });
-            };
-        }
-
         var zonesLayer = createGeoJsonLayer('RamallahZones.geojson', 'NAME', null, {color: 'black', fillOpacity: 0});
         var hospitalLayer = createGeoJsonLayer('hospital.geojson', 'NAME_AR', pointToLayerFunctionFactory('hospital'), null);
         var civilLayer = createGeoJsonLayer('ciivilld.geojson', 'NAME_AR', pointToLayerFunctionFactory('ciivilld'), null);
@@ -444,47 +410,20 @@
         map.on('mousemove', function (e) {
             document.getElementById('coordinates').innerHTML = e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5);
         });
-        // Adding routing control
-        var routingControl = L.Routing.control({
-            waypoints: [],
-            routeWhileDragging: true,
-            geocoder: L.Control.Geocoder.nominatim()
-        }).addTo(map);
 
-        // Adding a button to start routing
-        var routingButton = L.easyButton('fa-location-arrow', function(btn, map){
-            // Use the geolocation API to get the current position
-            map.locate({setView: true, maxZoom: 16});
-            map.on('locationfound', function(e){
-                var currentLocation = e.latlng;
-
-                // Open a popup to select the destination
-                L.popup()
-                    .setLatLng(currentLocation)
-                    .setContent('<b>Select your destination</b><br><button onclick="setRoutingDestination()">Set Destination</button>')
-                    .openOn(map);
-
-                window.setRoutingDestination = function() {
-                    var destination = L.DomUtil.get('destination').value;
-                    L.Routing.control({
-                        waypoints: [
-                            currentLocation,
-                            L.latLng(destination)
-                        ],
-                        routeWhileDragging: true
-                    }).addTo(map);
-                    map.closePopup();
-                }
-            });
-        }, 'Get Directions').addTo(map);
-       
-        // Function to toggle showing coordinates on button click
-        var showCoordinatesButton = document.getElementById('showCoordinatesButton');
-        showCoordinatesButton.addEventListener('click', function() {
-            var coordinatesDiv = document.getElementById('coordinates');
-            coordinatesDiv.style.display = 'block'; // Show coordinates div
-        });
+        // Function to create point to layer function based on type
+        function pointToLayerFunctionFactory(type) {
+            return function (feature, latlng) {
+                return L.marker(latlng, {
+                    icon: L.divIcon({
+                        className: 'custom-div-icon',
+                        html: '<div style="background-color: ' + typeColors[type] + ';" class="marker-pin"></div><i class="fas fa-map-marker-alt icon"></i>',
+                        iconSize: [30, 42],
+                        iconAnchor: [15, 42]
+                    })
+                });
+            }
+        }
     </script>
-</div>
 </body>
 </html>
