@@ -487,6 +487,25 @@ legend.addTo(map);
             var coordinatesDiv = document.getElementById('coordinates');
             coordinatesDiv.style.display = 'block'; // Show coordinates div
         });
+       // Adding a legend
+        var legend = L.control({position: 'bottomright'});
+
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'legend');
+            div.innerHTML += '<div><span style="background-color: orange"></span> Hospitals</div>';
+            div.innerHTML += '<div><span style="background-color: yellow"></span> Civil Defense Centers</div>';
+            div.innerHTML += '<div><span style="background-color: brown"></span> Pharmacies</div>';
+            div.innerHTML += '<div><span style="background-color: black"></span> Police Stations</div>';
+            div.innerHTML += '<div><span style="background-color: black"></span> Ramallah Zones</div>';
+            return div;
+        };
+
+        legend.addTo(map);
+
+        // Coordinates display
+        map.on('mousemove', function (e) {
+            document.getElementById('coordinates').innerHTML = e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5);
+        });
     </script>
 </div>
 </body>
