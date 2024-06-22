@@ -30,7 +30,7 @@
             font: 14px/16px Arial, Helvetica, sans-serif;
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
             border-radius: 5px;
-            position: fixed; /* يجعل العنصر ثابتاً في مكانه */
+           // position: fixed; /* يجعل العنصر ثابتاً في مكانه */
             bottom: 0; /* يضع العنصر في أسفل الصفحة */
            
 
@@ -258,7 +258,7 @@
             police: 'black'
         };
 
-      /*  var legend = L.control({ position: 'bottomright' });
+      var legend = L.control({ position: 'bottomright' });
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'legend');
             div.innerHTML += '<div><span style="background-color: orange; width: 20px; height: 20px; display: inline-block;"><img src="icons/hospital.svg" style="padding: 3px;"></span>Hospitals</div>';
@@ -268,7 +268,7 @@
             div.innerHTML += '<div><span style="background-color: black; width: 20px; height: 3px; display: inline-block;"></span>Ramallah Zones</div>';
             return div;
         };
-        legend.addTo(map);*/
+        legend.addTo(map);
 
         // Create custom marker icons
         function createCustomIcon(type) {
