@@ -328,7 +328,7 @@
             "Ramallah Zones": zonesLayer
         };
 
-        L.control.layers(null, overlayMaps).addTo(map);
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
 
         var searchControl = new L.Control.Search({
             layer: L.featureGroup([hospitalLayer, civilLayer, pharmacyLayer, policeLayer]),
